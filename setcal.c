@@ -42,7 +42,7 @@ int Command_Check(char c){
     }  
 }
 
-
+//ahoj test
 int main(int argc, char **argv){
 
     if(argc == 2){
