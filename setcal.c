@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-
+//dobry den
 
 //Possible remove of Univerzum_Check() up to Command_Check()
 int Univerzum_Check(char c){
