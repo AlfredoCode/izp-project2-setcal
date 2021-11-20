@@ -4,7 +4,7 @@
 #include <string.h>
 
 //dobry den
-
+//coze
 //Possible remove of Univerzum_Check() up to Command_Check()
 int Univerzum_Check(char c){
     if(c == 'U'){
