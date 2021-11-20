@@ -3,9 +3,11 @@
 #include <stdbool.h>
 #include <string.h>
 
+#define MAX_LETTERS 31
 
 typedef struct{
     char **set;
+    int WordCount;
 
 }set_t;
 
@@ -49,40 +51,37 @@ int main(int argc, char **argv){
                 printf("%c\n",c);
                 if(c == ' '){
                     buffer[CharCount] = '\0';
-                    /*if(WordCount == 0){
+                    if(WordCount == 0){
                         printf("Aho");
-                        U.set = malloc(sizeof(char) * strlen(buffer));
+                        U.set = malloc(sizeof(char) * MAX_LETTERS);
 
                     }
                     else{
-                        U.set = realloc(U.set,sizeof(char) * strlen(buffer) * (WordCount+1));
+                        U.set = realloc(U.set,sizeof(char) * MAX_LETTERS * (WordCount+1));
                         
                     }
                     if(U.set == NULL){
 
                         fprintf(stderr, "Not enough memory1");
                         return 1;
-                    }*/
+                    }
 
 
-                    //U.set[WordCount] = buffer;
-
-                    
-                    
-                    //U.set[WordCount] = malloc(sizeof(char) * strlen(buffer));
-                    /*if(U.set[WordCount] == NULL){
+                    U.set[WordCount] = buffer;
+                    U.set[WordCount] = malloc(sizeof(char) * strlen(buffer));
+                    if(U.set[WordCount] == NULL){
 
                         fprintf(stderr, "Not enough memory");
-                    }*/
-                    
-                    
+                    }     
                     
                     WordCount++;
+                    U.WordCount = WordCount;
                     
                 }
                 if(c == '\n'){
                     CharCount = 0;
                     isUniverzum = false;
+                    
                     WordCount = 0;
                     continue;                      
                 }
@@ -156,12 +155,20 @@ int main(int argc, char **argv){
                         }                           
                     } */  
                 //CharCount++;
+                
             } 
+            for(i = 0; i < U.WordCount;i++){
+                        free(U.set[i]);
+
+            }
+            
+            free(U.set);
+            
+
             printf("Debug\n");
-            /*char Univerzum_Elements[U_MAX][30];
-            strcpy(Univerzum_Elements[z],prvek);
-            printf("%s ",Univerzum_Elements[z]);*/     
         }
+        
+
         fclose(fileptr);
     }
 
