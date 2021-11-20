@@ -3,46 +3,14 @@
 #include <stdbool.h>
 #include <string.h>
 
-//dobry den
-//coze
-//Possible remove of Univerzum_Check() up to Command_Check()
-int Univerzum_Check(char c){
-    if(c == 'U'){
-        return true;
-    }
-    else{
-        return false;
-    }    
-}
 
-int Set_Check(char c){
-    if(c == 'S'){
-        return true;
-    }
-    else{
-        return false;
-    }
-}
+typedef struct{
+    char **set;
 
-int Relations_Check(char c){
-    if(c == 'R'){
-        return true;
-    }
-    else{
-        return false;
-    }  
-}
+}set_t;
 
-int Command_Check(char c){
-    if(c == 'C'){
-        return true;
-    }
-    else{
-        return false;
-    }  
-}
 
-//ahoj test
+
 int main(int argc, char **argv){
 
     if(argc == 2){
@@ -70,32 +38,89 @@ int main(int argc, char **argv){
             int CharCount = 0;
             int U_MAX = 0;
             bool isUniverzum = false;
-            char prvek[32] = {0};
+            char buffer[100] = {0};
             int i = 0;
             int z = 0;
+            int WordCount = 0;
              
-            
+            set_t U;
             
             while((c = fgetc(fileptr)) != EOF){
-                
+                printf("%c\n",c);
+                if(c == ' '){
+                    buffer[CharCount] = '\0';
+                    /*if(WordCount == 0){
+                        printf("Aho");
+                        U.set = malloc(sizeof(char) * strlen(buffer));
+
+                    }
+                    else{
+                        U.set = realloc(U.set,sizeof(char) * strlen(buffer) * (WordCount+1));
+                        
+                    }
+                    if(U.set == NULL){
+
+                        fprintf(stderr, "Not enough memory1");
+                        return 1;
+                    }*/
+
+
+                    //U.set[WordCount] = buffer;
+
+                    
+                    
+                    //U.set[WordCount] = malloc(sizeof(char) * strlen(buffer));
+                    /*if(U.set[WordCount] == NULL){
+
+                        fprintf(stderr, "Not enough memory");
+                    }*/
+                    
+                    
+                    
+                    WordCount++;
+                    
+                }
                 if(c == '\n'){
                     CharCount = 0;
-                    break;                       
+                    isUniverzum = false;
+                    WordCount = 0;
+                    continue;                      
                 }
-                if (CharCount == 0){
-                    if(Univerzum_Check(c) == true){     
-                        isUniverzum = true;
-                        CharCount++;
-                        continue;
+                //if (CharCount == 0){
+                    if(c == 'U'){   
+                        if(CharCount == 0){
+                            isUniverzum = true;
+                            CharCount++;
+                            if(fgetc(fileptr) != ' '){
+                                
+                                fprintf(stderr,"Space after initializator error\n");
+                                return 1;
+                            }
+                            //printf("I found U definition\n");
+                            continue;
+                        } 
+                        else{
+                            
+                            fprintf(stderr,"Error on token U %d\n",CharCount);
+                            return 1;
+                        }
+                        
                     }
-                    else if(Univerzum_Check(c) == false){
+                    buffer[CharCount] = c;
+                    CharCount++;
+
+
+
+
+                    /*else{
                         isUniverzum = false;
                         fprintf(stderr,"Universum has not been found\n");
                         return 0;                    
-                    }
-                }    
-                else if(CharCount == 1){
-                    if(c == ' '){
+                    }*/
+                    
+               // }    
+                //else if(CharCount == 1){
+                    /*if(c == ' ' ){
                         isUniverzum = true;
                         printf("I found U definition\n");
                     }
@@ -103,9 +128,14 @@ int main(int argc, char **argv){
                         isUniverzum = false;
                         fprintf(stderr,"Universum has not been found\n");
                         return 0; 
-                    }
-                }
-                    if(isUniverzum == true && c != '\n'){                  
+                    }*/
+                //}
+                    
+                    
+                    
+                    
+                    
+                    /*if(isUniverzum == true && c != '\n'){                  
                         
                         if(c == ' '){
                             
@@ -124,9 +154,10 @@ int main(int argc, char **argv){
                             prvek[i+1] = '\0';
                             i++;                      
                         }                           
-                    }   
-                CharCount++;
+                    } */  
+                //CharCount++;
             } 
+            printf("Debug\n");
             /*char Univerzum_Elements[U_MAX][30];
             strcpy(Univerzum_Elements[z],prvek);
             printf("%s ",Univerzum_Elements[z]);*/     
