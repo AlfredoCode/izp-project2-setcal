@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #define MAX_LETTERS 31
+
 
 
 typedef struct{
@@ -15,6 +17,32 @@ typedef struct{
 
 }set_t;
 
+
+int setContains(set_t set, element_t element){
+    int count = 0;
+
+    for(int i = 0;i < set.size;i++){
+        if(strcmp(set.set[i].word, element.word)){
+
+            count++;
+        }
+        
+        
+    }
+    return count;
+
+}
+
+int isSet(set_t set){
+    for(int i = 0;i < set.size;i++){
+        if(setContains(set,set.set[i]) == 1){
+
+        }
+        else{}
+
+    }
+
+}
 
 
 
@@ -49,6 +77,12 @@ int main(int argc, char** argv){
         fprintf(stderr,"Invalid count of arguments\n");
         return 1;   
     }
+    /*set_t setU;
+    
+    element_t test;
+    test = malloc();
+    test.word = "App";
+    setContains(setU,test);*/
 
     FILE *input;
     if((input = fopen(argv[1],"r")) == NULL){
