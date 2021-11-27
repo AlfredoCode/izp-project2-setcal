@@ -294,7 +294,7 @@ int main(int argc, char** argv){
     }
     free(data);
     
-    
+ 
     fclose(input);
     return 0;
 }
