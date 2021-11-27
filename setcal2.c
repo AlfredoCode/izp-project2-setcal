@@ -42,10 +42,10 @@ int setContains(set_t set, element_t element){
 
 int isSet(set_t set){
     for(int i = 0;i < set.size;i++){
-        if(setContains(set,set.set[i]) == 1){
-
+        if(setContains(set,set.set[i]) > 1){
+		return 0;
         }
-        else{}
+	return 1;
 
     }
 
