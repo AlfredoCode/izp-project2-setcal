@@ -6,7 +6,6 @@
 
 
 typedef struct{
-    int size;
     char *word;
 
 }element_t;
@@ -16,6 +15,14 @@ typedef struct{
     int size;
 
 }set_t;
+
+
+element_t * relGetLeft(set_t *relation,int index){
+	return &(relation->set[index*2]);
+}
+element_t * relGetRight(set_t *relation,int index){
+	return &(relation->set[(index*2)+1]);
+}
 
 
 int setContains(set_t set, element_t element){
