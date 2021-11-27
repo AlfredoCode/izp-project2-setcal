@@ -125,31 +125,56 @@ void allocLine(FILE *file,set_t *s){
     int c;
     char word[MAX_LETTERS];
     int i = 0;
-    while(((c = fgetc(file)) != EOF) && c != '\n'){
-        if(i >= MAX_LETTERS){
 
-            fprintf(stderr,"Maximum length exceeded\n");
+    if(s->type == R){   //TODO RELATION, ZMENIT :)
+        while(((c = fgetc(file)) != EOF) && c != '\n'){
+            if(i >= MAX_LETTERS){
+
+                fprintf(stderr,"Maximum length exceeded\n");
+            }
+            if(c == ' '){
+                //Add to struct
+                word[i] = '\0';
+                fill(s, word);
+                i = 0;
+                continue;
+            } 
+            else{
+                word[i] = c;
+            }
+            i++;
         }
-        if(c == ' '){
-            //Add to struct
+        if(c != EOF){
             word[i] = '\0';
             fill(s, word);
-            i = 0;
-            continue;
-
-
         }
-        
-        else{
-            word[i] = c;
-        }
-        i++;
-    }
-    if(c != EOF){
-        word[i] = '\0';
-        fill(s, word);
 
     }
+    else{
+        while(((c = fgetc(file)) != EOF) && c != '\n'){
+            if(i >= MAX_LETTERS){
+
+                fprintf(stderr,"Maximum length exceeded\n");
+            }
+            if(c == ' '){
+                //Add to struct
+                word[i] = '\0';
+                fill(s, word);
+                i = 0;
+                continue;
+            } 
+            else{
+                word[i] = c;
+            }
+            i++;
+        }
+        if(c != EOF){
+            word[i] = '\0';
+            fill(s, word);
+        }
+
+    }
+    
 }
 
 void printSet(set_t *s){
