@@ -7,6 +7,7 @@
 #define MAX_LINES 1000
 
 enum set_type{U,S,R};
+enum error_type{U_};
 
 void err(char *msg){
 
@@ -161,18 +162,18 @@ void printSet(set_t *s){
     printf("\n");
 }
 
-int parse(FILE *file,set_t **data){
+int parse(FILE *file,set_t **data, int *lineCount){
     int c;
     //int charPos = 0;
-    int lineCount = 0;
+    
     bool isUniversum = false;
     set_t *setTmp;
     while((c = fgetc(file)) != EOF){
         //printf("%c",c);
-        if(c != 'U' && lineCount == 0){
+        if(c != 'U' && *lineCount == 0){
             fprintf(stderr,"Universe not defined!\n");
         }
-        if(c == 'U' && lineCount == 0){
+        if(c == 'U' && *lineCount == 0){
             
             //Struct Universe is being created
             if(fgetc(file) == ' '){
@@ -188,7 +189,7 @@ int parse(FILE *file,set_t **data){
            
             
         }
-        if(c == 'U' && lineCount != 0){
+        if(c == 'U' && *lineCount != 0){
 
             fprintf(stderr,"Multiple universe definition!\n");
         }
@@ -199,6 +200,10 @@ int parse(FILE *file,set_t **data){
                 if(fgetc(file) == ' '){
                     setTmp = ctor(S);
                     allocLine(file,setTmp);
+                    if(!isSet(*setTmp)){
+                        err("Duplicate elements in set\n");
+
+                    }
                 } 
                  
         }
@@ -216,21 +221,21 @@ int parse(FILE *file,set_t **data){
             
                 //Commands
                printf("Command read\n");
-               lineCount++;
-               return lineCount; //DEBUG
+               (*lineCount)++;
+               return 0; //DEBUG
                  
         }  
         
-        data[lineCount] = setTmp;
+        data[*lineCount] = setTmp;
         //printf("%s",data[lineCount]->set[lineCount].word);
-        lineCount++;
+        (*lineCount)++;
 
         //printSet(setTmp);
         //charPos++;
         //printSet((setTmp));
     }
 
-    return lineCount;
+    return 0;
 
 }
 
@@ -252,7 +257,9 @@ int main(int argc, char** argv){
     if(data == NULL){
         errAlloc();
     }
-    int i = parse(input,data);
+    int i = 0;
+    int err_code = parse(input,data,&i); //NACTENI DAT A INICIALIZACE KODOVEHO HLASENI
+    
     int count = 0;
     while(count < i-1){
         printSet((data[count]));
