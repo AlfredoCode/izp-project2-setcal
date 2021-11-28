@@ -264,6 +264,12 @@ int parse(FILE *file,set_t **data, int *lineCount){
 
 }
 
+void card(set_t *s){
+    if(s->type == S){
+        printf("There are %d elements in set above\n",s->size);
+    }
+}
+
 
 
 int main(int argc, char** argv){
@@ -286,8 +292,10 @@ int main(int argc, char** argv){
     int err_code = parse(input,data,&i); //NACTENI DAT A INICIALIZACE KODOVEHO HLASENI
     
     int count = 0;
+    
     while(count < i-1){
         printSet((data[count]));
+        card((data[count]));
         dtor(data[count]);
         count++;
         
