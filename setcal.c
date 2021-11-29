@@ -21,15 +21,22 @@ enum error_type{U_};
                                 };*/
 
 
-
+/**
+ * @brief Function for printing error messages
+ * 
+ * @param msg Message to be printed
+ */
 void err(char *msg){
 
     fprintf(stderr,"%s",msg);
 }
-
+/**
+ * @brief often used error message
+ * 
+ */
 void errAlloc(){
 
-    fprintf(stderr,"Memory allocation failed\n");
+    err("Memory allocation failed\n");
 }
 
 typedef struct{
@@ -53,10 +60,10 @@ element_t * relGetRight(set_t *relation,int index){
 }
 
 /**
- * @brief Allocates memory for set_t
+ * @brief Allocates memory for set_t and sets default value to s.type, the rest of the value are set to 0 or NULL
  * 
- * @param type Defines type of TODO
- * @return set_t* 
+ * @param type Defines type of the set_t
+ * @return set_t* Pointer to newly created set
  */
 set_t *ctor(int type){
     set_t *s;
@@ -69,7 +76,11 @@ set_t *ctor(int type){
     s->size = 0;
     return s;
 }
-
+/**
+ * @brief Systematically frees s.set and then the set itself
+ * 
+ * @param s Pointer to set_t to be freed
+ */
 void dtor(set_t *s){
     if(s == NULL){
         return;
@@ -86,7 +97,13 @@ void dtor(set_t *s){
     free(s);
 }
 
-
+/**
+ * @brief Counts how many times specific element_t appears in set_t
+ * 
+ * @param set Set_t to be checked
+ * @param element Element_t to be found
+ * @return int Number of times element_t is in set_t
+ */
 int setContains(set_t set, element_t element){
     int count = 0;
 
@@ -97,7 +114,12 @@ int setContains(set_t set, element_t element){
     }
     return count;
 }
-
+/**
+ * @brief Checks if given set_t is a Set
+ * 
+ * @param set Set_t to be checked
+ * @return int Value 0(false) - set_t set is not a set. Value 1(true) - set_t set is a set
+ */
 int isSet(set_t set){
     for(int i = 0;i < set.size;i++){
         if(setContains(set,set.set[i]) > 1){
@@ -106,6 +128,14 @@ int isSet(set_t set){
 	return 1;
     }
 }
+/**
+ * @brief Adds set_t values to s.set
+ * 
+ * @param s Set to which a value is added
+ * @param element Word to be added
+ */
+// We should probably rename this function to add
+// Also why char * Element why not word - Michal
 void fill(set_t *s, char *element){
     if(s->size == 0){
         s->set = malloc(sizeof(element_t));
@@ -130,6 +160,12 @@ void fill(set_t *s, char *element){
     (s->size)++;
 
 }
+/**
+ * @brief Load a line from file to a set_t
+ * 
+ * @param file Input file
+ * @param s Set_t in which a line kept
+ */
 void allocLine(FILE *file,set_t *s){
     int c;
     char word[MAX_LETTERS];
@@ -139,7 +175,7 @@ void allocLine(FILE *file,set_t *s){
     while(((c = fgetc(file)) != EOF) && c != '\n'){
         if(i >= MAX_LETTERS){
 
-            fprintf(stderr,"Maximum length exceeded\n");
+            err("Maximum length exceeded\n");
         }
         if(c == ' '){
             //Add to struct
@@ -161,7 +197,11 @@ void allocLine(FILE *file,set_t *s){
     
     
 }
-
+/**
+ * @brief Prints the type of the set followed by all its elements
+ * 
+ * @param s Set_t to be printed
+ */
 void printSet(set_t *s){
     
     printf("%d ",s->type);
@@ -186,7 +226,6 @@ void empty(set_t **data,int index){
 
 
 }
-
 
 void card(set_t **data, int lineCount){
     /*if(data[lineCount]->type == S){
@@ -287,7 +326,12 @@ void bijective(set_t **data,int index){
 
 }
 
-
+/**
+ * @brief Decides which command function to execute
+ * 
+ * @param data Dynamically allocated array of pointers to set_t where input is stored
+ * @param lineCount Line on which given command is located
+ */
 void callOperation(set_t **data,int lineCount){
     char *word = data[lineCount]->set[0].word;
 
@@ -353,6 +397,13 @@ void callOperation(set_t **data,int lineCount){
     }
 
 }
+/**
+ * @brief Checks whether s1 is subset of s2
+ * 
+ * @param s1 Possible subset 
+ * @param s2 Possible superset
+ * @return int Value 0(false) - set_t s1 is not a subset. Value 1(true) - set_t s1 is a subset
+ */
 int subsetElements(set_t *s1, set_t *s2){
     int code = 0;
     for(int i = 0;i < s1->size;i++){
@@ -387,7 +438,7 @@ int subsetElements(set_t *s1, set_t *s2){
     return 1;
 }*/
 
-
+//As pointed out by Dan almost the same as isSet
 int checkValidity(set_t *s){
     int isValid = 1;
     for(int i = 0;i < s->size;i++){
@@ -400,7 +451,13 @@ int checkValidity(set_t *s){
     return isValid;
 
 }
-
+/**
+ * @brief Checks whether all elements of set are in universe and whether the set is a Set
+ * 
+ * @param data Dynamically allocated array of pointers to set_t where input is stored
+ * @param lineCount Line on which given set is located
+ * @return int Value 0(false) - check failed and and error message was printed. Value 1(true) - check successful
+ */
 int checkElements(set_t **data, int lineCount){
     if(!subsetElements(data[lineCount], data[0])){
        err("Set element not defined in universe!\n");
@@ -415,7 +472,14 @@ int checkElements(set_t **data, int lineCount){
 }
 
 
-
+/**
+ * @brief Parses input file and loads data
+ * 
+ * @param file Pointer to input file
+ * @param data Dynamically allocated array of pointers to set_t where input is stored
+ * @param lineCount Number of already parsed lines
+ * @return Value 0 - parse successful, else output for error value
+ */
 int parse(FILE *file,set_t **data, int *lineCount){
     int c;
     //int charPos = 0;
@@ -425,7 +489,7 @@ int parse(FILE *file,set_t **data, int *lineCount){
     while((c = fgetc(file)) != EOF){
         //printf("%c",c);
         if(c != 'U' && *lineCount == 0){
-            fprintf(stderr,"Universe not defined!\n");
+            err("Universe not defined!\n");
         }
         if(c == 'U' && *lineCount == 0){
             
@@ -442,12 +506,12 @@ int parse(FILE *file,set_t **data, int *lineCount){
             }
             
             else{
-                fprintf(stderr,"Universe not defined\n");
+                err("Universe not defined\n");
             }    
         }
         if(c == 'U' && *lineCount != 0){
 
-            fprintf(stderr,"Multiple universe definition!\n");
+            err("Multiple universe definition!\n");
         }
 
         if(c == 'S'){
@@ -509,7 +573,7 @@ int parse(FILE *file,set_t **data, int *lineCount){
 
 int main(int argc, char** argv){
     if(argc < 2){
-        fprintf(stderr,"Invalid count of arguments\n");
+        err("Invalid count of arguments\n");
         return 1;   
     }
 
