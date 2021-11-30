@@ -203,8 +203,21 @@ void allocLine(FILE *file,set_t *s){
  * @param s Set_t to be printed
  */
 void printSet(set_t *s){
-    
-    printf("%d ",s->type);
+    switch(s->type){
+	case U:
+		printf("U ");
+		break;
+	case R:
+		printf("R ");
+		break;
+	
+	case S:
+		printf("S ");
+		break;
+    	default:
+		printf("jiny typ mnoziny");
+	}
+    //printf("%d ",s->type);
     for(int i = 0;i < s->size;i++){
 
         printf("%s ",s->set[i].word);
@@ -227,9 +240,9 @@ void empty(set_t **data,int index){
 
 }
 
-void card(set_t **data, int lineCount){
-    /*if(data[lineCount]->type == S){
-        printf("There are %d elements in set above\n",data->size);
+void card(set_t *s){
+    /*if(s->type == S){
+        printf("There are %d elements in set above\n",s);
     }*/
 }
 
@@ -339,7 +352,12 @@ void callOperation(set_t **data,int lineCount){
         empty(data, lineCount);
     }
     else if(strcmp("card",word)){
-        card(data, lineCount);
+	if(data[lineCount]->size!=2){
+		err("invalid argument of command card\n");
+		return;
+	}
+	// int setLine = strtol(data[lineCount]->set[1].word);
+        //card(data[setLine]);
     }
     else if(strcmp("complement",word)){
         complement(data, lineCount);
