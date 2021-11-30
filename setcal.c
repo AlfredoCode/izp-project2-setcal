@@ -241,9 +241,9 @@ void empty(set_t **data,int index){
 }
 
 void card(set_t *s){
-    /*if(s->type == S){
-        printf("There are %d elements in set above\n",s);
-    }*/
+    if(s->type == S){
+        printf("There are %d elements in set above\n",s->size);
+    }
 }
 
 void complement(set_t **s, int lineCount){ //TODO
@@ -348,16 +348,16 @@ void bijective(set_t **data,int index){
 void callOperation(set_t **data,int lineCount){
     char *word = data[lineCount]->set[0].word;
 
-    if(strcmp("empty",word)){
+    if(!strcmp(word,"empty")){
         empty(data, lineCount);
     }
-    else if(strcmp("card",word)){
+    else if(!strcmp("card",word)){
 	if(data[lineCount]->size!=2){
 		err("invalid argument of command card\n");
 		return;
 	}
-	// int setLine = strtol(data[lineCount]->set[1].word);
-        //card(data[setLine]);
+	long setLine = strtol(data[lineCount]->set[1].word,NULL,10);
+        card(data[setLine]);
     }
     else if(strcmp("complement",word)){
         complement(data, lineCount);
