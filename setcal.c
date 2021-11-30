@@ -456,19 +456,6 @@ int subsetElements(set_t *s1, set_t *s2){
     return 1;
 }*/
 
-//As pointed out by Dan almost the same as isSet
-int checkValidity(set_t *s){
-    int isValid = 1;
-    for(int i = 0;i < s->size;i++){
-        
-        int elCount = setContains(*s,s->set[i]);
-        if(elCount > 1){
-            isValid = 0;
-        }       
-    }
-    return isValid;
-
-}
 /**
  * @brief Checks whether all elements of set are in universe and whether the set is a Set
  * 
@@ -481,7 +468,7 @@ int checkElements(set_t **data, int lineCount){
        err("Set element not defined in universe!\n");
        return 0; 
     }
-    if(!checkValidity(data[lineCount])){
+    if(!isSet(*(data[lineCount]))){
         err("Invalid set!\n");
         return 0;      
     }
