@@ -11,14 +11,14 @@ enum set_type{U,S,R,C};
 enum error_type{U_};
 
 
-/*char ForbiddenWords [FORBIDDEN_WORDS_COUNT][FORBIDDEN_WORDS_MAX_LENGTH] =  {
-                                    {"empty"},{"true"},{"false"},{"card"},
-                                    {"complement"},{"union"},{"intersect"},{"minus"},
-                                    {"subseteq"},{"subset"},{"equals"},{"reflexive"},
-                                    {"symmetric"},{"antisymmetric"},{"transitive"},
-                                    {"function"},{"domain"},{"codomain"},{"injective"},
-                                    {"surjective"},{"bijective"}
-                                };*/
+char *ForbiddenWords [FORBIDDEN_WORDS_COUNT] =  {
+                                    "empty","true","false","card",
+                                    "complement","union","intersect","minus",
+                                    "subseteq","subset","equals","reflexive",
+                                    "symmetric","antisymmetric","transitive",
+                                    "function","domain","codomain","injective",
+                                    "surjective","bijective"
+                                };
 
 
 /**
@@ -166,32 +166,62 @@ void fill(set_t *s, char *element){
  * @param file Input file
  * @param s Set_t in which a line kept
  */
-void allocLine(FILE *file,set_t *s){
+int allocLine(FILE *file,set_t *s){
     int c;
     char word[MAX_LETTERS];
     int i = 0;
-
+    bool inRelation = false;
+    int elNumber = 0;
     
     while(((c = fgetc(file)) != EOF) && c != '\n'){
         if(i >= MAX_LETTERS){
 
             err("Maximum length exceeded\n");
+            return -1;
         }
         if(c == ' '){
             //Add to struct
             word[i] = '\0';
+            //printf("%s\n", word);
             fill(s, word);
+            elNumber++;
             i = 0;
             continue;
-        } 
-        else{
-            word[i] = c;
         }
+        if(s->type == R){
+            if(c == '('){
+                if(inRelation == true){
+                    err("Multiple\n"); //TODO
+                    return -1;
+                }
+                inRelation = true;
+                continue;
+            }
+            if(c == ')'){
+                if(inRelation == false){
+                    err("Relation not defined correctly\n");
+                    return -1;
+                }  
+                if(elNumber != 1){
+                    err("Invalid number of elements in relation\n");
+                    return -1;
+                }
+                inRelation = false;
+                elNumber = 0;
+                i++;
+                continue;
+            } 
+           
+        }
+        
+        
+        word[i] = c;
+       
         i++;
     }
     //if(c != EOF){     //DOES NOT WORK FOR LAST STRING ON LAST LINE
-        word[i] = '\0';
-        fill(s, word);
+        /*word[i] = '\0';
+        fill(s, word);*/
     //}
 
     
@@ -214,13 +244,24 @@ void printSet(set_t *s){
 	case S:
 		printf("S ");
 		break;
-    	default:
+    default:
 		printf("jiny typ mnoziny");
 	}
     //printf("%d ",s->type);
-    for(int i = 0;i < s->size;i++){
+    int size = s->size;
+    if(s->type == R){
+        size = size / 2;
+    }
+    for(int i = 0;i < size;i++){
+        
+        if(s->type == R){
+            printf("(%s %s) ",relGetLeft(s,i)->word,relGetRight(s,i)->word);
 
-        printf("%s ",s->set[i].word);
+        }
+        else{
+            printf("%s ",s->set[i].word);
+        }
+        
     }
     printf("\n");
 }
@@ -274,8 +315,21 @@ void minus(set_t **data,int index){
 
 }
 
-void subseteq(set_t **data,int index){
-
+int subseteq(set_t *s1,set_t *s2){
+    int code = 0;
+    for(int i = 0;i < s1->size;i++){
+        code = 0;
+        for(int j = 0; j < s2->size;j++){
+            if(!strcmp(s1->set[i].word,s2->set[j].word)){
+                code = 1;
+            }    
+        }
+        if(!code){      
+            return 0;
+        }    
+    }
+    
+    return 1;
 
 }
 
@@ -377,7 +431,7 @@ void callOperation(set_t **data,int lineCount){
     }
     else if(!strcmp("subseteq",word)){
      	err("subseteq is not implemented yet\n");
-	subseteq(data, lineCount);
+	    //subseteq(data, lineCount);
     }
     else if(!strcmp("subset",word)){
      	err("subset is not implemented yet\n");
@@ -465,22 +519,18 @@ int subsetElements(set_t *s1, set_t *s2){
     return 1;
 }
 
-/*int subsetElements2(set_t *s1, char **word_arr, int arr_size){
-    int code = 0;
-    for(int i = 0;i < s1->size;i++){
-        code = 0;
-        for(int j = 0; j < arr_size;j++){
-            if(!strcmp(s1->set[i].word,word_arr[j])){
-                code = 1;                                       
+int subsetElements2(set_t *s1){   
+    for(int i = 0;i < s1->size;i++){  
+        for(int j = 0; j < FORBIDDEN_WORDS_COUNT;j++){
+            if(!strcmp(s1->set[i].word,ForbiddenWords[j])){
+                return -1;                                       
             }    
         }
-        if(!code){      
-            return 0;
-        }    
+    
     }
     
     return 1;
-}*/
+}
 
 /**
  * @brief Checks whether all elements of set are in universe and whether the set is a Set
@@ -490,13 +540,13 @@ int subsetElements(set_t *s1, set_t *s2){
  * @return int Value 0(false) - check failed and and error message was printed. Value 1(true) - check successful
  */
 int checkElements(set_t **data, int lineCount){
-    if(!subsetElements(data[lineCount], data[0])){
+    if(!subseteq(data[lineCount], data[0])){
        err("Set element not defined in universe!\n");
-       return 0; 
+       return -1; 
     }
     if(!isSet(*(data[lineCount]))){
         err("Invalid set!\n");
-        return 0;      
+        return -1;      
     }
     
     return 1;
@@ -514,11 +564,16 @@ int checkElements(set_t **data, int lineCount){
 int parse(FILE *file,set_t **data, int *lineCount){
     int c;
     //int charPos = 0;
-    
+    bool isC = false;
     bool isUniversum = false;
     set_t *setTmp;
     while((c = fgetc(file)) != EOF){
         //printf("%c",c);
+        if(isC == true && c != 'C'){
+
+            err("Set declaration after commands\n");
+            return -1; //TODO
+        }
         if(c != 'U' && *lineCount == 0){
             err("Universe not defined!\n");
         }
@@ -531,18 +586,21 @@ int parse(FILE *file,set_t **data, int *lineCount){
                 
                 //UN-SUCCESSFUL PASS FORBIDDEN_WORDS INTO UNIVERSE CHECK
 
-                /*if(subsetElements2(setTmp, ForbiddenWords,FORBIDDEN_WORDS_COUNT)){    
+                if((subsetElements2(setTmp)) == -1){    
                     err("Commands or keywords used in universe!\n");
-                }*/
+                    return -1;
+                }
             }
             
             else{
                 err("Universe not defined\n");
+                return -1;
             }    
         }
         if(c == 'U' && *lineCount != 0){
 
             err("Multiple universe definition!\n");
+            return -1;
         }
 
         if(c == 'S'){
@@ -566,7 +624,7 @@ int parse(FILE *file,set_t **data, int *lineCount){
                  
         }
         if(c == 'C'){
-            
+            isC = true;
 
             if(fgetc(file) == ' '){
                 setTmp = ctor(C);
@@ -585,7 +643,9 @@ int parse(FILE *file,set_t **data, int *lineCount){
         data[*lineCount] = setTmp;
         
         if(setTmp->type != C){
-            checkElements(data,*lineCount);
+            if(checkElements(data,*lineCount) == -1){
+                return -1;
+            }
         }
         //printf("%s",data[lineCount]->set[lineCount].word);
         (*lineCount)++;
@@ -605,14 +665,14 @@ int parse(FILE *file,set_t **data, int *lineCount){
 int main(int argc, char** argv){
     if(argc < 2){
         err("Invalid count of arguments\n");
-        return 1;   
+        return -1;   
     }
 
 
     FILE *input;
     if((input = fopen(argv[1],"r")) == NULL){
         fprintf(stderr,">File '%s' could not be opened\n",argv[1]);
-        return 1;
+        return -1;
     } 
     set_t **data = (set_t **)malloc(sizeof(set_t*)*MAX_LINES);
     if(data == NULL){
@@ -620,7 +680,9 @@ int main(int argc, char** argv){
     }
     int i = 0;
     int err_code = parse(input,data,&i); //NACTENI DAT A INICIALIZACE KODOVEHO HLASENI
-    
+    if(err_code == -1){
+        return -1;
+    }
     int count = 0;
     
     while(count < i){
