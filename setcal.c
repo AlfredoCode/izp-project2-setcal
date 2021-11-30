@@ -603,7 +603,7 @@ int main(int argc, char** argv){
             printSet((data[count]));
         }
         else{
-            callOperation(data,i);
+            callOperation(data,count);
         }
         //card((data[count]));
         //complement((data[count]),/*TODO*/);
