@@ -276,43 +276,165 @@ void printSet(set_t *s){
     else
         return value;
 }*/
-void empty(set_t **data,int index){
 
 
-}
-
-void card(set_t *s){
-    if(s->type == S){
-        printf("There are %d elements in set above\n",s->size);
+/**
+ * 
+ * @brief Prints true if given set A is empty 
+ * 
+ * @param s Pointer to set A
+ */
+void empty(set_t *s){
+    if (s == NULL ){
+        err("Set undefined\n");
     }
+    if(s->type != S){
+        err("Ivalid command\n");
+    }
+
+    if(s->size == 0)
+        printf("true\n");
+    else printf("false\n"); 
 }
 
-void complement(set_t **s, int lineCount){ //TODO
-    /*if(s->type == S){
-        printf("Complement of < ");
-        for(int i = 0;i < s->size;i++){
+/**
+ * @brief Prints cardinality of a set A 
+ * 
+ * @param s Pointer to set A
+ */
+void card(set_t *s){
+    if (s == NULL ){
+        err("Set undefined\n");
+    }
+    if(s->type != S){
+        err("Invalid command\n");
+    }
+    printf("%d\n", s->size);
+}
 
-            printf("%s ",s->set[i].word);
+/**
+ * @brief Prints complement of set A to set B
+ * 
+ * @param s1 Pointer to a set A
+ * @param s2 Pointer to a set B to which complement is made. In this case always Universe
+ */
+void complement(set_t *s1, set_t *s2){
+    if (s1 == NULL || s2 == NULL){
+        err("Set undefined\n");
+    }
+    if ((s1->type != S) || !((s2->type == S) || (s2->type == U))){
+        err("Invalid command\n");
+    }
+    
+    bool inSet=false;
+    printf("S");
+    for(int i = 0; i < s2->size; i++){
+        for(int j = 0;j < s1->size; j++){
+            if(!strcmp(s2->set[i].word, s1->set[j].word))
+                inSet = true;
         }
-        printf("> is: ");
-        printf("\n");
-        
-    }*/
+        if (!(inSet))
+            printf(" %s", s2->set[i].word);
+        inSet = false;
+    }
+    printf("\n");
 }
 
-void union_set(set_t **data,int index){
+/**
+ * @brief Prints union of set A and set B
+ * 
+ * @param s1 Pointer to set A
+ * @param s2 Pointer to set B
+ */
+void union_set(set_t *s1, set_t *s2){
+    if (s1 == NULL || s2 == NULL){
+        err("Set undefined\n");
+    }
+    if((s1->type != S) || (s2->type != S)){
+        err("Invalid command\n");
+    }
 
+    bool inSet = false;
+    printf("S");
+
+    for(int i = 0; i < s1->size; i++){
+        printf(" %s", s1->set[i].word);
+    }
+    for(int i = 0; i < s2->size; i++){
+        for(int j = 0; j < s1->size; j++){
+            if(!strcmp(s2->set[i].word, s1->set[j].word)){
+                inSet = true;
+            }
+        }
+        if(!inSet){
+            printf(" %s", s2->set[i].word);
+        }
+        inSet=false;
+    }
+    printf("\n");
 
 }
 
-void intersect(set_t **data,int index){
+/**
+ * @brief Prints intersection of set A and set B
+ * 
+ * @param s1 Pointer to set A
+ * @param s2 Pointer to set B
+ */
+void intersect(set_t *s1, set_t *s2){
+    if (s1 == NULL || s2 == NULL){
+        err("Set undefined\n");
+    }
+    if((s1->type != S) || (s2->type != S)){
+        err("Invalid command\n");
+    }
 
+    bool inSet = false;
+    printf("S");
 
+    for(int i = 0; i < s1->size; i++){
+        for(int j = 0; j < s2->size; j++){
+            if(!strcmp(s1->set[i].word, s2->set[j].word)){
+                inSet = true;
+            }
+        }
+        if(inSet){
+            printf(" %s", s1->set[i].word);
+        }
+        inSet=false;
+    }
+    printf("\n");
 }
 
-void minus(set_t **data,int index){
+/**
+ * @brief Prints subtraction of set A \ set B
+ * 
+ * @param s1 Pointer to set A 
+ * @param s2 Pointer to set B
+ */
+void minus(set_t *s1, set_t *s2){
+    if (s1 == NULL || s2 == NULL){
+        err("Set undefined\n");
+    }
+    if((s1->type != S) || (s2->type != S)){
+        err("Invalid command\n");
+    }
 
+    bool inSet = false;
+    printf("S");
 
+    for(int i = 0; i < s1->size; i++){
+        for(int j = 0; j < s2->size; j++){
+            if(!strcmp(s1->set[i].word, s2->set[j].word)){
+                inSet = true;
+            }
+        }
+        if(!inSet){
+            printf(" %s", s1->set[i].word);
+        }
+        inSet=false;
+    }
+    printf("\n");
 }
 
 int subseteq(set_t *s1,set_t *s2){
