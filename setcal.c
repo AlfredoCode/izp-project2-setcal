@@ -359,55 +359,81 @@ void callOperation(set_t **data,int lineCount){
 	long setLine = strtol(data[lineCount]->set[1].word,NULL,10);
         card(data[setLine]);
     }
-    else if(strcmp("complement",word)){
-        complement(data, lineCount);
+    else if(!strcmp("complement",word)){
+        err("complement is not implemented yet\n");
+	complement(data, lineCount);
     }
-    else if(strcmp("union",word)){
-        union_set(data, lineCount);
+    else if(!strcmp("union",word)){
+     	err("union is not implemented yet\n");
+	union_set(data, lineCount);
     }
-    else if(strcmp("intersect",word)){
-        intersect(data, lineCount);
+    else if(!strcmp("intersect",word)){
+     	err("intersect is not implemented yet\n");
+	intersect(data, lineCount);
     }
-    else if(strcmp("minus",word)){
-        minus(data, lineCount);
+    else if(!strcmp("minus",word)){
+	err("minus is not implemented yet\n"); 
+	minus(data, lineCount);
     }
-    else if(strcmp("subseteq",word)){
-        subseteq(data, lineCount);
+    else if(!strcmp("subseteq",word)){
+     	err("subseteq is not implemented yet\n");
+	subseteq(data, lineCount);
     }
-    else if(strcmp("subset",word)){
-        subset(data, lineCount);
+    else if(!strcmp("subset",word)){
+     	err("subset is not implemented yet\n");
+	subset(data, lineCount);
     }
-    else if(strcmp("equals",word)){
-        equals(data, lineCount);
+    else if(!strcmp("equals",word)){
+	err("equals is not implemented yet\n");
+	equals(data, lineCount);
     }
-    else if(strcmp("reflexive",word)){
-        reflexive(data, lineCount);
+    else if(!strcmp("reflexive",word)){
+     	err("reflexive is not implemented yet\n");
+	reflexive(data, lineCount);
     }
-    else if(strcmp("symmetric",word)){
-        symmetric(data, lineCount);
+    else if(!strcmp("symmetric",word)){
+     	err("symmetric is not implemented yet\n");
+	symmetric(data, lineCount);
     }
-    else if(strcmp("antisymmetric",word)){
-        antisymmetric(data, lineCount);
+    else if(!strcmp("antisymmetric",word)){
+ 
+     	err("antisymmetric is not implemented yet\n");     
+  	antisymmetric(data, lineCount);
     }
-    else if(strcmp("transitive",word)){
-        transitive(data, lineCount);
+    else if(!strcmp("transitive",word)){
+ 
+     	err("transitive is not implemented yet\n");
+     	transitive(data, lineCount);
     }
-    else if(strcmp("function",word)){
-        function(data, lineCount);
+    else if(!strcmp("function",word)){
+ 
+     	err("function is not implemented yet\n");
+       	function(data, lineCount);
     }
-    else if(strcmp("domain",word)){
+    else if(!strcmp("domain",word)){
+
+     	err("domain is not implemented yet\n");
         domain(data, lineCount);
     }
-    else if(strcmp("codomain",word)){
-        codomain(data, lineCount);
+    else if(!strcmp("codomain",word)){
+ 
+     	err("codomain is not implemented yet\n");    
+   	codomain(data, lineCount);
     }
-    else if(strcmp("injective",word)){
+    else if(!strcmp("injective",word)){
+
+     	err("injective is not implemented yet\n");
         injective(data, lineCount);
     }
-    else if(strcmp("surjective",word)){
+ 
+    else if(!strcmp("surjective",word)){
+
+     	err("surjective is not implemented yet\n");
         surjective(data, lineCount);
     }
-    else if(strcmp("bijective",word)){
+    else if(!strcmp("bijective",word)){
+
+     	err("bijective is not implemented yet\n");
         bijective(data, lineCount);
     }
     else{
