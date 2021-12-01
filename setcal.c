@@ -182,17 +182,17 @@ int allocLine(FILE *file,set_t *s){
         if(c == ' ' || c=='\n'){
             //Add to struct
             word[i] = '\0';
-     //       printf("%s %d\n", word,strlen(word));
+            //printf("%s %d\n", word,strlen(word));
             if(strlen(word)>0){
-	        fill(s, word);
-   	    }
+	            fill(s, word);
+   	        }
             if(inRelation==true){
-		elNumber++;
-	    }
+                elNumber++;
+            }
             i = 0;
-	    if(c=='\n'){
-		break;
-	    }
+            if(c=='\n'){
+                break;
+            }
             continue;
         }
 
@@ -538,13 +538,13 @@ void bijective(set_t **data,int index){
  * @param data Dynamically allocated array of pointers to set_t where input is stored
  * @param lineCount Line on which given command is located
  */
-void callOperation(set_t **data,int lineCount){
+int callOperation(set_t **data,int lineCount){
     char *word = data[lineCount]->set[0].word;
 
     if(!strcmp(word,"empty")){
 	if(data[lineCount]->size!=2){
 		err("invalid argument of command empty");
-		return;
+		return -1;
 	}
 	int setLine = strtol(data[lineCount]->set[1].word,NULL,10);
      	empty(data[setLine]);
@@ -552,21 +552,38 @@ void callOperation(set_t **data,int lineCount){
     else if(!strcmp("card",word)){
 	if(data[lineCount]->size!=2){
 		err("invalid argument of command card\n");
-		return;
+		return -1;
 	}
 	long setLine = strtol(data[lineCount]->set[1].word,NULL,10);
         card(data[setLine]);
     }
     else if(!strcmp("complement",word)){
         err("complement is not implemented yet\n");
+        /*if(data[lineCount]->size != 2){
+
+        }*/
 	//complement(data, lineCount);
     }
     else if(!strcmp("union",word)){
-     	err("union is not implemented yet\n");
+         if(data[lineCount]->size != 3){
+             err("invalid argument of command union\n");
+             return -1;
+         }
+         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10);
+         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10);
+         union_set(data[setLine1],data[setLine2]);
+         
 //	union_set(data, lineCount);
     }
     else if(!strcmp("intersect",word)){
      	err("intersect is not implemented yet\n");
+         if(data[lineCount]->size != 3){
+             err("invalid argument of command union\n");
+             return -1;
+         }
+         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10);
+         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10);
+         intersect(data[setLine1],data[setLine2]);
 //	intersect(data, lineCount);
     }
     else if(!strcmp("minus",word)){
@@ -721,6 +738,7 @@ int parse(FILE *file,set_t **data, int *lineCount){
         }
         if(c != 'U' && *lineCount == 0){
             err("Universe not defined!\n");
+            return -1;
         }
         if(c == 'U' && *lineCount == 0){
             
@@ -824,11 +842,20 @@ int main(int argc, char** argv){
         errAlloc();
     }
     int i = 0;
+    int count = 0;
     int err_code = parse(input,data,&i); //NACTENI DAT A INICIALIZACE KODOVEHO HLASENI
     if(err_code == -1){
-       return -1;
+
+        while(count < i){
+        
+            dtor(data[count]);
+            count++;  
+        }
+
+        free(data);
+        fclose(input);
+        return -1;
     }
-    int count = 0;
     
     while(count < i){
         if((data[count]->type) != C){
