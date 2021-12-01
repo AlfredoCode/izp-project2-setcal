@@ -819,7 +819,7 @@ int main(int argc, char** argv){
     int i = 0;
     int err_code = parse(input,data,&i); //NACTENI DAT A INICIALIZACE KODOVEHO HLASENI
     if(err_code == -1){
-       // return -1;
+       return -1;
     }
     int count = 0;
     
