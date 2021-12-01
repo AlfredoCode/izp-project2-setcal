@@ -125,8 +125,8 @@ int isSet(set_t set){
         if(setContains(set,set.set[i]) > 1){
 	    	return 0;
         }
-	return 1;
     }
+    return 1;
 }
 /**
  * @brief Adds set_t values to s.set
@@ -182,8 +182,10 @@ int allocLine(FILE *file,set_t *s){
         if(c == ' ' || c=='\n'){
             //Add to struct
             word[i] = '\0';
-            //printf("%s\n", word);
-            fill(s, word);
+     //       printf("%s %d\n", word,strlen(word));
+            if(strlen(word)>0){
+	        fill(s, word);
+   	    }
             if(inRelation==true){
 		elNumber++;
 	    }
@@ -540,7 +542,12 @@ void callOperation(set_t **data,int lineCount){
     char *word = data[lineCount]->set[0].word;
 
     if(!strcmp(word,"empty")){
-     //   empty(data, lineCount);
+	if(data[lineCount]->size!=2){
+		err("invalid argument of command empty");
+		return;
+	}
+	int setLine = strtol(data[lineCount]->set[1].word,NULL,10);
+     	empty(data[setLine]);
     }
     else if(!strcmp("card",word)){
 	if(data[lineCount]->size!=2){
