@@ -287,9 +287,11 @@ void printSet(set_t *s){
 void empty(set_t *s){
     if (s == NULL ){
         err("Set undefined\n");
+        return;
     }
     if(s->type != S){
         err("Ivalid command\n");
+        return;
     }
 
     if(s->size == 0)
@@ -305,9 +307,11 @@ void empty(set_t *s){
 void card(set_t *s){
     if (s == NULL ){
         err("Set undefined\n");
+        return;
     }
     if(s->type != S){
         err("Invalid command\n");
+        return;
     }
     printf("%d\n", s->size);
 }
@@ -321,9 +325,11 @@ void card(set_t *s){
 void complement(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
         err("Set undefined\n");
+        return;
     }
     if ((s1->type != S) || !((s2->type == S) || (s2->type == U))){
         err("Invalid command\n");
+        return;
     }
     
     bool inSet=false;
@@ -349,9 +355,11 @@ void complement(set_t *s1, set_t *s2){
 void union_set(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
         err("Set undefined\n");
+        return;
     }
     if((s1->type != S) || (s2->type != S)){
         err("Invalid command\n");
+        return;
     }
 
     bool inSet = false;
@@ -384,9 +392,11 @@ void union_set(set_t *s1, set_t *s2){
 void intersect(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
         err("Set undefined\n");
+        return;
     }
     if((s1->type != S) || (s2->type != S)){
         err("Invalid command\n");
+        return;
     }
 
     bool inSet = false;
@@ -415,9 +425,11 @@ void intersect(set_t *s1, set_t *s2){
 void minus(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
         err("Set undefined\n");
+        return;
     }
     if((s1->type != S) || (s2->type != S)){
         err("Invalid command\n");
+        return;
     }
 
     bool inSet = false;
