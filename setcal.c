@@ -576,7 +576,6 @@ int callOperation(set_t **data,int lineCount){
 //	union_set(data, lineCount);
     }
     else if(!strcmp("intersect",word)){
-     	err("intersect is not implemented yet\n");
          if(data[lineCount]->size != 3){
              err("invalid argument of command union\n");
              return -1;
