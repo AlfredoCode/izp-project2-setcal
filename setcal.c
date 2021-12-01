@@ -173,25 +173,31 @@ int allocLine(FILE *file,set_t *s){
     bool inRelation = false;
     int elNumber = 0;
     
-    while(((c = fgetc(file)) != EOF) && c != '\n'){
+    while(((c = fgetc(file)) != EOF)){
         if(i >= MAX_LETTERS){
 
             err("Maximum length exceeded\n");
             return -1;
         }
-        if(c == ' '){
+        if(c == ' ' || c=='\n'){
             //Add to struct
             word[i] = '\0';
             //printf("%s\n", word);
             fill(s, word);
-            elNumber++;
+            if(inRelation==true){
+		elNumber++;
+	    }
             i = 0;
+	    if(c=='\n'){
+		break;
+	    }
             continue;
         }
+
         if(s->type == R){
             if(c == '('){
                 if(inRelation == true){
-                    err("Multiple\n"); //TODO
+                    err("Relation is not defined correctly\n"); //TODO
                     return -1;
                 }
                 inRelation = true;
@@ -208,7 +214,7 @@ int allocLine(FILE *file,set_t *s){
                 }
                 inRelation = false;
                 elNumber = 0;
-                i++;
+		
                 continue;
             } 
            
@@ -449,22 +455,19 @@ void minus(set_t *s1, set_t *s2){
     printf("\n");
 }
 
-int subseteq(set_t *s1,set_t *s2){
-    int code = 0;
-    for(int i = 0;i < s1->size;i++){
-        code = 0;
-        for(int j = 0; j < s2->size;j++){
-            if(!strcmp(s1->set[i].word,s2->set[j].word)){
-                code = 1;
+int subseteq(set_t *s,set_t *uni){
+    int count = 0;
+    for(int i = 0;i < s->size;i++){
+        for(int j = 0; j < uni->size;j++){
+            if(!strcmp(s->set[i].word,uni->set[j].word)){
+                count++;
             }    
         }
-        if(!code){      
-            return 0;
-        }    
-    }
-    
-    return 1;
-
+     }
+     if(count!=s->size){
+  	return 0;
+     }
+     return 1;
 }
 
 void subset(set_t **data,int index){
@@ -537,7 +540,7 @@ void callOperation(set_t **data,int lineCount){
     char *word = data[lineCount]->set[0].word;
 
     if(!strcmp(word,"empty")){
-        empty(data, lineCount);
+     //   empty(data, lineCount);
     }
     else if(!strcmp("card",word)){
 	if(data[lineCount]->size!=2){
@@ -549,19 +552,19 @@ void callOperation(set_t **data,int lineCount){
     }
     else if(!strcmp("complement",word)){
         err("complement is not implemented yet\n");
-	complement(data, lineCount);
+	//complement(data, lineCount);
     }
     else if(!strcmp("union",word)){
      	err("union is not implemented yet\n");
-	union_set(data, lineCount);
+//	union_set(data, lineCount);
     }
     else if(!strcmp("intersect",word)){
      	err("intersect is not implemented yet\n");
-	intersect(data, lineCount);
+//	intersect(data, lineCount);
     }
     else if(!strcmp("minus",word)){
 	err("minus is not implemented yet\n"); 
-	minus(data, lineCount);
+//	minus(data, lineCount);
     }
     else if(!strcmp("subseteq",word)){
      	err("subseteq is not implemented yet\n");
@@ -569,60 +572,60 @@ void callOperation(set_t **data,int lineCount){
     }
     else if(!strcmp("subset",word)){
      	err("subset is not implemented yet\n");
-	subset(data, lineCount);
+//	subset(data, lineCount);
     }
     else if(!strcmp("equals",word)){
 	err("equals is not implemented yet\n");
-	equals(data, lineCount);
+//	equals(data, lineCount);
     }
     else if(!strcmp("reflexive",word)){
      	err("reflexive is not implemented yet\n");
-	reflexive(data, lineCount);
+//	reflexive(data, lineCount);
     }
     else if(!strcmp("symmetric",word)){
      	err("symmetric is not implemented yet\n");
-	symmetric(data, lineCount);
+//	symmetric(data, lineCount);
     }
     else if(!strcmp("antisymmetric",word)){
  
      	err("antisymmetric is not implemented yet\n");     
-  	antisymmetric(data, lineCount);
+  //	antisymmetric(data, lineCount);
     }
     else if(!strcmp("transitive",word)){
  
      	err("transitive is not implemented yet\n");
-     	transitive(data, lineCount);
+    // 	transitive(data, lineCount);
     }
     else if(!strcmp("function",word)){
  
      	err("function is not implemented yet\n");
-       	function(data, lineCount);
+     //  	function(data, lineCount);
     }
     else if(!strcmp("domain",word)){
 
      	err("domain is not implemented yet\n");
-        domain(data, lineCount);
+     //   domain(data, lineCount);
     }
     else if(!strcmp("codomain",word)){
  
      	err("codomain is not implemented yet\n");    
-   	codomain(data, lineCount);
+   //	codomain(data, lineCount);
     }
     else if(!strcmp("injective",word)){
 
      	err("injective is not implemented yet\n");
-        injective(data, lineCount);
+     //   injective(data, lineCount);
     }
  
     else if(!strcmp("surjective",word)){
 
      	err("surjective is not implemented yet\n");
-        surjective(data, lineCount);
+     //   surjective(data, lineCount);
     }
     else if(!strcmp("bijective",word)){
 
      	err("bijective is not implemented yet\n");
-        bijective(data, lineCount);
+     //   bijective(data, lineCount);
     }
     else{
         err("Command not found!\n");
@@ -678,11 +681,12 @@ int checkElements(set_t **data, int lineCount){
        err("Set element not defined in universe!\n");
        return -1; 
     }
-    if(!isSet(*(data[lineCount]))){
-        err("Invalid set!\n");
-        return -1;      
+    if(data[lineCount]->type!=R){
+        if(!isSet(*(data[lineCount]))){
+            err("Invalid set!\n");
+            return -1;      
+        }
     }
-    
     return 1;
 }
 
@@ -719,13 +723,13 @@ int parse(FILE *file,set_t **data, int *lineCount){
                 allocLine(file,setTmp);
                 
                 //UN-SUCCESSFUL PASS FORBIDDEN_WORDS INTO UNIVERSE CHECK
-
-                if((subsetElements2(setTmp)) == -1){    
-                    err("Commands or keywords used in universe!\n");
-                    return -1;
-                }
+		if(setTmp->type!=C){	
+                    if((subsetElements2(setTmp)) == -1){    
+                        err("Commands or keywords used in universe!\n");
+                        return -1;
+                    }
+                 }
             }
-            
             else{
                 err("Universe not defined\n");
                 return -1;
@@ -775,7 +779,7 @@ int parse(FILE *file,set_t **data, int *lineCount){
           
         
         data[*lineCount] = setTmp;
-        
+       //setTmp=NULL;
         if(setTmp->type != C){
             if(checkElements(data,*lineCount) == -1){
                 return -1;
@@ -815,7 +819,7 @@ int main(int argc, char** argv){
     int i = 0;
     int err_code = parse(input,data,&i); //NACTENI DAT A INICIALIZACE KODOVEHO HLASENI
     if(err_code == -1){
-        return -1;
+       // return -1;
     }
     int count = 0;
     
