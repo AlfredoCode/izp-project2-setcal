@@ -233,7 +233,7 @@ int allocLine(FILE *file,set_t *s){
     //}
 
     
-    
+    return 0;
 }
 /**
  * @brief Prints the type of the set followed by all its elements
@@ -297,7 +297,7 @@ void empty(set_t *s){
         err("Set undefined\n");
         return;
     }
-    if(s->type != S){
+    if(!((s->type == S) || (s->type == U))){
         err("Ivalid command\n");
         return;
     }
@@ -317,7 +317,7 @@ void card(set_t *s){
         err("Set undefined\n");
         return;
     }
-    if(s->type != S){
+    if(!((s->type == S) || (s->type == U))){
         err("Invalid command\n");
         return;
     }
@@ -335,7 +335,7 @@ void complement(set_t *s1, set_t *s2){
         err("Set undefined\n");
         return;
     }
-    if ((s1->type != S) || !((s2->type == S) || (s2->type == U))){
+    if (!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
         err("Invalid command\n");
         return;
     }
@@ -365,7 +365,7 @@ void union_set(set_t *s1, set_t *s2){
         err("Set undefined\n");
         return;
     }
-    if((s1->type != S) || (s2->type != S)){
+    if(!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
         err("Invalid command\n");
         return;
     }
@@ -402,7 +402,7 @@ void intersect(set_t *s1, set_t *s2){
         err("Set undefined\n");
         return;
     }
-    if((s1->type != S) || (s2->type != S)){
+    if(!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
         err("Invalid command\n");
         return;
     }
@@ -435,7 +435,7 @@ void minus(set_t *s1, set_t *s2){
         err("Set undefined\n");
         return;
     }
-    if((s1->type != S) || (s2->type != S)){
+    if(!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
         err("Invalid command\n");
         return;
     }
@@ -472,9 +472,40 @@ int subseteq(set_t *s,set_t *uni){
      return 1;
 }
 
-void subset(set_t **data,int index){
+/**
+ * @brief Prints true if set A is a subset of B
+ * 
+ * @param s1 Pointer to set A
+ * @param s2 Pointer to set B
+ */
+void subset(set_t *s1, set_t *s2){
+    if (s1 == NULL || s2 == NULL){
+        err("Set undefined\n");
+    }
+    if(!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
+        err("Invalid command\n");
+    }
 
+    if(s1->size >= s2->size){
+        printf("false\n");
+        return;
+    }
 
+    bool inSet = false;
+
+    for(int i = 0; i < s1->size; i++){
+        for(int j = 0; j < s2->size; j++){
+            if(!strcmp(s1->set[i].word, s2->set[j].word)){
+                inSet = true;
+            }
+        }
+        if(!inSet){
+            printf("false\n");
+            return;
+        }
+        inSet=false;
+    }
+    printf("true\n");
 }
 
 int equals(set_t *s1,set_t *s2){
@@ -482,7 +513,7 @@ int equals(set_t *s1,set_t *s2){
         err("Set undefined\n");
         return -1;
     }
-    if((s1->type != S) || (s2->type != S)){
+    if(!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
         err("Invalid set input\n");
         return -1;
     }
@@ -511,39 +542,32 @@ int equals(set_t *s1,set_t *s2){
     return 1;
 
 }
-
+/*
 void reflexive(set_t **data,int index){
-
 
 }
 
 void symmetric(set_t **data,int index){
 
-
 }
 
 void antisymmetric(set_t **data,int index){
-
 
 }
 
 void transitive(set_t **data,int index){
 
-
 }
 
 void function(set_t **data,int index){
 
-
 }
 
 void domain(set_t **data,int index){
-
-
+   
 }
 
 void codomain(set_t **data,int index){
-
 
 }
 
@@ -561,6 +585,7 @@ void bijective(set_t **data,int index){
 
 
 }
+*/
 
 /**
  * @brief Decides which command function to execute
@@ -576,68 +601,74 @@ int callOperation(set_t **data,int lineCount){
             err("invalid argument of command empty");
             return -1;
         }
-        int setLine = strtol(data[lineCount]->set[1].word,NULL,10);
-            empty(data[setLine]);
+        int setLine = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+        empty(data[setLine]);
     }
     else if(!strcmp("card",word)){
         if(data[lineCount]->size!=2){
             err("invalid argument of command card\n");
             return -1;
         }
-        long setLine = strtol(data[lineCount]->set[1].word,NULL,10);
-            card(data[setLine]);
+        long setLine = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+        card(data[setLine]);
     }
     else if(!strcmp("complement",word)){
-        err("complement is not implemented yet\n");
-        /*if(data[lineCount]->size != 2){
-
-        }*/
-	//complement(data, lineCount);
+        if(data[lineCount]->size!=2){
+            err("invalid argument of command card\n");
+            return -1;
+        }
+        long setLine = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+        
+        complement(data[setLine], data[0]);
     }
     else if(!strcmp("union",word)){
          if(data[lineCount]->size != 3){
              err("invalid argument of command union\n");
              return -1;
          }
-         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10);
-         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10);
+         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10)-1;
          union_set(data[setLine1],data[setLine2]);
-         
-//	union_set(data, lineCount);
     }
     else if(!strcmp("intersect",word)){
          if(data[lineCount]->size != 3){
              err("invalid argument of command union\n");
              return -1;
          }
-         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10);
-         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10);
+         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10)-1;
          intersect(data[setLine1],data[setLine2]);
-//	intersect(data, lineCount);
     }
     else if(!strcmp("minus",word)){
-	err("minus is not implemented yet\n"); 
-//	minus(data, lineCount);
+        if(data[lineCount]->size != 3){
+             err("invalid argument of command union\n");
+             return -1;
+         }
+         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10)-1;
+         minus(data[setLine1],data[setLine2]);
     }
     else if(!strcmp("subseteq",word)){
      	err("subseteq is not implemented yet\n");
 	    //subseteq(data, lineCount);
     }
     else if(!strcmp("subset",word)){
-     	err("subset is not implemented yet\n");
-//	subset(data, lineCount);
+     	if(data[lineCount]->size != 3){
+             err("invalid argument of command union\n");
+             return -1;
+         }
+         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10)-1;
+         subset(data[setLine1],data[setLine2]);
     }
     else if(!strcmp("equals",word)){
-	//err("equals is not implemented yet\n");
-    if(data[lineCount]->size != 3){
+        if(data[lineCount]->size != 3){
              err("invalid argument of command equals\n");
              return -1;
-    }
-    long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10);
-    long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10);
-    equals(data[setLine1],data[setLine2]);
-
-//	equals(data, lineCount);
+        }
+        long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+        long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10)-1;
+        equals(data[setLine1],data[setLine2]);
     }
     else if(!strcmp("reflexive",word)){
      	err("reflexive is not implemented yet\n");
@@ -691,7 +722,7 @@ int callOperation(set_t **data,int lineCount){
     else{
         err("Command not found!\n");
     }
-
+    return 0;
 }
 /**
  * @brief Checks whether s1 is subset of s2
@@ -764,7 +795,7 @@ int parse(FILE *file,set_t **data, int *lineCount){
     int c;
     //int charPos = 0;
     bool isC = false;
-    bool isUniversum = false;
+    //bool isUniversum = false;
     set_t *setTmp;
     while((c = fgetc(file)) != EOF){
         //printf("%c",c);
