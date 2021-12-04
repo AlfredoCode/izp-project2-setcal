@@ -537,13 +537,48 @@ void function(set_t **data,int index){
 
 }
 
-void domain(set_t **data,int index){
-
+void domain(set_t *s){
+    if (s == NULL ){
+        err("Relation undefined\n");
+        return;
+    }
+    if(s->type != R){
+        err("Invalid relation input\n");
+        return;
+    }
+    int count;
+    printf("S ");
+    for(int i = 0;i < s->size;i++){
+        count = i*2;
+        if(s->size > count){
+            printf("%s ",relGetLeft(s,i)->word);
+        }
+        
+    }
+    printf("\n");
+    
 
 }
 
-void codomain(set_t **data,int index){
-
+void codomain(set_t *s){
+    if (s == NULL ){
+        err("Relation undefined\n");
+        return;
+    }
+    if(s->type != R){
+        err("Invalid relation input\n");
+        return;
+    }
+    int count;
+    printf("S ");
+    for(int i = 0;i < s->size;i++){
+        count = (i * 2 ) + 1;
+        if(s->size > count){
+            printf("%s ",relGetRight(s,i)->word);
+        }
+        
+    }
+    printf("\n");
 
 }
 
@@ -663,13 +698,23 @@ int callOperation(set_t **data,int lineCount){
      //  	function(data, lineCount);
     }
     else if(!strcmp("domain",word)){
-
-     	err("domain is not implemented yet\n");
+        if(data[lineCount]->size != 2){
+             err("invalid argument of command domain\n");
+             return -1;
+        }
+        long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10);
+        domain(data[setLine1]);
+     	//err("domain is not implemented yet\n");
      //   domain(data, lineCount);
     }
     else if(!strcmp("codomain",word)){
- 
-     	err("codomain is not implemented yet\n");    
+        if(data[lineCount]->size != 2){
+             err("invalid argument of command codomain\n");
+             return -1;
+        }
+        long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10);
+        codomain(data[setLine1]);
+     	//err("codomain is not implemented yet\n");    
    //	codomain(data, lineCount);
     }
     else if(!strcmp("injective",word)){
@@ -805,21 +850,21 @@ int parse(FILE *file,set_t **data, int *lineCount){
 
         if(c == 'S'){
             
-                //Struct is being created
-                if(fgetc(file) == ' '){
-                    setTmp = ctor(S);
-                    allocLine(file,setTmp);
-                    
-                } 
+            //Struct is being created
+            if(fgetc(file) == ' '){
+                setTmp = ctor(S);
+                allocLine(file,setTmp);
+                
+            } 
                  
         }
         if(c == 'R'){
             
-                //Struct is relation being created
-                if(fgetc(file) == ' '){
-                    setTmp = ctor(R);
-                    allocLine(file,setTmp);
-                } 
+            //Struct is relation being created
+            if(fgetc(file) == ' '){
+                setTmp = ctor(R);
+                allocLine(file,setTmp);
+            } 
                  
                  
         }
