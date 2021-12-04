@@ -477,8 +477,38 @@ void subset(set_t **data,int index){
 
 }
 
-void equals(set_t **data,int index){
+int equals(set_t *s1,set_t *s2){
+    if (s1 == NULL || s2 == NULL){
+        err("Set undefined\n");
+        return -1;
+    }
+    if((s1->type != S) || (s2->type != S)){
+        err("Invalid set input\n");
+        return -1;
+    }
+    if(s1->size != s2->size){
+        printf("false\n");
+        return 0;
+    }
+    bool isEqual = true;
+    for(int i = 0;i < s1->size;i++){
+        if(isEqual != true){
+            printf("false\n");
+            return 0;
+        }
+        for(int j = 0;j < s2->size;j++){
+            if(!strcmp(s1->set[i].word,s2->set[j].word)){
+                isEqual = true;
+                break;
+            }
+            else{
+                isEqual = false;
+            }
 
+        }
+    }
+    printf("true\n");
+    return 1;
 
 }
 
@@ -540,22 +570,22 @@ void bijective(set_t **data,int index){
  */
 int callOperation(set_t **data,int lineCount){
     char *word = data[lineCount]->set[0].word;
-
+    
     if(!strcmp(word,"empty")){
-	if(data[lineCount]->size!=2){
-		err("invalid argument of command empty");
-		return -1;
-	}
-	int setLine = strtol(data[lineCount]->set[1].word,NULL,10);
-     	empty(data[setLine]);
+        if(data[lineCount]->size!=2){
+            err("invalid argument of command empty");
+            return -1;
+        }
+        int setLine = strtol(data[lineCount]->set[1].word,NULL,10);
+            empty(data[setLine]);
     }
     else if(!strcmp("card",word)){
-	if(data[lineCount]->size!=2){
-		err("invalid argument of command card\n");
-		return -1;
-	}
-	long setLine = strtol(data[lineCount]->set[1].word,NULL,10);
-        card(data[setLine]);
+        if(data[lineCount]->size!=2){
+            err("invalid argument of command card\n");
+            return -1;
+        }
+        long setLine = strtol(data[lineCount]->set[1].word,NULL,10);
+            card(data[setLine]);
     }
     else if(!strcmp("complement",word)){
         err("complement is not implemented yet\n");
@@ -598,7 +628,15 @@ int callOperation(set_t **data,int lineCount){
 //	subset(data, lineCount);
     }
     else if(!strcmp("equals",word)){
-	err("equals is not implemented yet\n");
+	//err("equals is not implemented yet\n");
+    if(data[lineCount]->size != 3){
+             err("invalid argument of command equals\n");
+             return -1;
+    }
+    long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10);
+    long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10);
+    equals(data[setLine1],data[setLine2]);
+
 //	equals(data, lineCount);
     }
     else if(!strcmp("reflexive",word)){
@@ -869,6 +907,7 @@ int main(int argc, char** argv){
         //dtor(data[count]);
         count++;  
     }
+    
     count = 0;
     while(count < i){
         
