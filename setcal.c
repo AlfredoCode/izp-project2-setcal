@@ -38,7 +38,6 @@ void errAlloc(){
     err("Memory allocation failed\n");
 }
 
-
 typedef struct{
     char *word;
 
@@ -165,6 +164,7 @@ int isRel(set_t rel){
  * 
  * @param s Set to which a value is added
  * @param element Word to be added
+ * @return int Value 0 - no errors encountered
  */
 int fill(set_t *s, char *element){
     if(s->size == 0){
@@ -189,13 +189,14 @@ int fill(set_t *s, char *element){
     strcpy(s->set[s->size].word, element);
     (s->size)++;
     return 0;
-
 }
+
 /**
  * @brief Load a line from file to a set_t
  * 
  * @param file Input file
  * @param s Set_t in which a line kept
+ * @return int Value 0 - no errors encountered
  */
 int allocLine(FILE *file,set_t *s){
     int c;
@@ -203,10 +204,8 @@ int allocLine(FILE *file,set_t *s){
     int i = 0;
     bool inRelation = false;
     int elNumber = 0;
-    
     while(((c = fgetc(file)) != EOF)){
         if(i >= MAX_LETTERS){
-
             err("Maximum length exceeded\n");
             return -1;
         }
@@ -222,10 +221,7 @@ int allocLine(FILE *file,set_t *s){
         }
         if(c == ' ' || c=='\n'){
             //Add to struct
-            
             word[i] = '\0';
-            
-            
             if(strlen(word)>0){
 	            if(fill(s, word) == -1){
                     return -1;
@@ -240,7 +236,6 @@ int allocLine(FILE *file,set_t *s){
             }
             continue;
         }
-
         if(s->type == R){
             if(c == '('){
                 if(inRelation == true){
@@ -261,18 +256,12 @@ int allocLine(FILE *file,set_t *s){
                 }
                 inRelation = false;
                 elNumber = 0;
-		
                 continue;
-            } 
-           
+            }    
         }
-        
-        
         word[i] = c;
-       
         i++;
-    }
-    
+    } 
     return 0;
 }
 /**
@@ -308,19 +297,16 @@ void printSet(set_t *s){
         }
         else{
             printf(" %s",s->set[i].word);
-        }
-        
+        } 
     }
     printf("\n");
 }
 
-
-
 /**
- * 
  * @brief Prints true if given set A is empty 
  * 
  * @param s Pointer to set A
+ * @return int Value 0 - no errors encountered
  */
 int empty(set_t *s){
     if (s == NULL ){
@@ -341,7 +327,8 @@ int empty(set_t *s){
 /**
  * @brief Prints cardinality of a set A 
  * 
- * @param s Pointer to set A
+ * @param s Pointer to set A 
+ * @return int Value 0 - no errors encountered
  */
 int card(set_t *s){
     if (s == NULL ){
@@ -361,6 +348,7 @@ int card(set_t *s){
  * 
  * @param s1 Pointer to a set A
  * @param s2 Pointer to a set B to which complement is made. In this case always Universe
+ * @return int Value 0 - no errors encountered
  */
 int complement(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
@@ -391,7 +379,8 @@ int complement(set_t *s1, set_t *s2){
  * @brief Prints union of set A and set B
  * 
  * @param s1 Pointer to set A
- * @param s2 Pointer to set B
+ * @param s2 Pointer to set B 
+ * @return int Value 0 - no errors encountered
  */
 int union_set(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
@@ -402,10 +391,8 @@ int union_set(set_t *s1, set_t *s2){
         err("Invalid command\n");
         return -1;
     }
-
     bool inSet = false;
     printf("S");
-
     for(int i = 0; i < s1->size; i++){
         printf(" %s", s1->set[i].word);
     }
@@ -429,7 +416,8 @@ int union_set(set_t *s1, set_t *s2){
  * @brief Prints intersection of set A and set B
  * 
  * @param s1 Pointer to set A
- * @param s2 Pointer to set B
+ * @param s2 Pointer to set B 
+ * @return int Value 0 - no errors encountered
  */
 int intersect(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
@@ -440,10 +428,8 @@ int intersect(set_t *s1, set_t *s2){
         err("Invalid command\n");
         return -1;
     }
-
     bool inSet = false;
     printf("S");
-
     for(int i = 0; i < s1->size; i++){
         for(int j = 0; j < s2->size; j++){
             if(!strcmp(s1->set[i].word, s2->set[j].word)){
@@ -463,7 +449,8 @@ int intersect(set_t *s1, set_t *s2){
  * @brief Prints subtraction of set A \ set B
  * 
  * @param s1 Pointer to set A 
- * @param s2 Pointer to set B
+ * @param s2 Pointer to set B 
+ * @return int Value 0 - no errors encountered
  */
 int minus(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
@@ -474,10 +461,8 @@ int minus(set_t *s1, set_t *s2){
         err("Invalid command\n");
         return -1;
     }
-
     bool inSet = false;
     printf("S");
-
     for(int i = 0; i < s1->size; i++){
         for(int j = 0; j < s2->size; j++){
             if(!strcmp(s1->set[i].word, s2->set[j].word)){
@@ -501,11 +486,11 @@ int subseteqCheck(set_t *s,set_t *uni){
                 count++;
             }    
         }
-     }
-     if(count!=s->size){
-  	return 0;
-     }
-     return 1;
+    }
+    if(count!=s->size){
+  	    return 0;
+    }
+    return 1;
 }
 int subseteq(set_t *a,set_t *b){
     if (a == NULL || b == NULL){
@@ -531,6 +516,7 @@ int subseteq(set_t *a,set_t *b){
  * 
  * @param s1 Pointer to set A
  * @param s2 Pointer to set B
+ * @return int Value 0 - no errors encountered
  */
 int subset(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
@@ -541,14 +527,11 @@ int subset(set_t *s1, set_t *s2){
         err("Invalid command\n");
         return -1;
     }
-
     if(s1->size >= s2->size){
         printf("false\n");
         return 0;
     }
-
     bool inSet = false;
-
     for(int i = 0; i < s1->size; i++){
         for(int j = 0; j < s2->size; j++){
             if(!strcmp(s1->set[i].word, s2->set[j].word)){
@@ -565,6 +548,13 @@ int subset(set_t *s1, set_t *s2){
     return 1;
 }
 
+/**
+ * @brief Prints true if given set s1 is equal to given set s2 
+ * 
+ * @param s1 Pointer to set s1
+ * @param s2 Pointer to set s2
+ * @return int Value 0 - printed false. Value 1 - printed true. Value -1 - encountered an error
+ */
 int equals(set_t *s1,set_t *s2){
     if (s1 == NULL || s2 == NULL){
         err("Set undefined\n");
@@ -592,7 +582,6 @@ int equals(set_t *s1,set_t *s2){
             else{
                 isEqual = false;
             }
-
         }
     }
     if(isEqual == false){
@@ -601,7 +590,6 @@ int equals(set_t *s1,set_t *s2){
     }
     printf("true\n");
     return 1;
-
 }
 
 /**
@@ -609,6 +597,7 @@ int equals(set_t *s1,set_t *s2){
  * 
  * @param r Pointer to relation R
  * @param s Pointer to set S. in this case always universe
+ * @return int Value 0 - printed false. Value 1 - printed true. Value -1 - encountered an error
  */
 int reflexive(set_t *r, set_t *s){
     if (r == NULL || s == NULL){
@@ -623,9 +612,7 @@ int reflexive(set_t *r, set_t *s){
         printf("false\n");
         return 0;
     }
-
     bool inSet = false;
-
     for(int i = 0; i < s->size; i++){
         for(int j = 0; j < r->size/2; j++){
             if(!strcmp(s->set[i].word, relGetLeft(r,j)->word) && !strcmp(s->set[i].word, relGetRight(r,j)->word))
@@ -646,7 +633,8 @@ int reflexive(set_t *r, set_t *s){
 /**
  * @brief Prints true if given relation R is symmetric
  * 
- * @param r Pointer to relation R
+ * @param r Pointer to relation R 
+ * @return int Value 0 - printed false. Value 1 - printed true. Value -1 - encountered an error
  */
 int symmetric(set_t *r){
     if (r == NULL){
@@ -657,9 +645,7 @@ int symmetric(set_t *r){
         err("Invalid command\n");
         return -1;
     }
-
     bool isSymmetric = false;
-
     for(int i = 0; i < r->size/2; i++){
         if (!strcmp(relGetLeft(r,i)->word, relGetRight(r, i)->word))
             continue;
@@ -685,7 +671,8 @@ int symmetric(set_t *r){
 /**
  * @brief Prints true if given relation R is Antisymmetric
  * 
- * @param r Pointer to relation R
+ * @param r Pointer to relation R 
+ * @return int Value 0 - printed false. Value 1 - printed true. Value -1 - encountered an error
  */
 int antisymmetric(set_t *r){
     if (r == NULL){
@@ -696,9 +683,7 @@ int antisymmetric(set_t *r){
         err("Invalid command\n");
         return -1;
     }
-
     bool isAntiSymmetric = true;
-
     for(int i = 0; i < r->size/2; i++){
         if (!strcmp(relGetLeft(r, i)->word,relGetRight(r, i)->word))
             continue;
@@ -725,6 +710,7 @@ int antisymmetric(set_t *r){
  * @brief Prints true if given relation R is transitive
  * 
  * @param r Pointer to relation R
+ * @return int Value 0 - printed false. Value 1 - printed true. Value -1 - encountered an error
  */
 int transitive(set_t *r){
     if (r == NULL){
@@ -735,9 +721,7 @@ int transitive(set_t *r){
         err("Invalid command\n");
         return -1;
     }
-
     bool isTransitive = false;
-
     for(int i = 0; i < r->size/2; i++){
         for(int j = 0; j < r->size/2; j++){
             if(!strcmp(relGetRight(r, i)->word, relGetLeft(r, j)->word)){
@@ -774,13 +758,13 @@ bool functionCheck(set_t *r){
         }
     }
     return true;
-
 }
 
 /**
  * @brief Prints true if given relation R is a function
  * 
  * @param r Pointer to relation R
+ * @return int Value 0 - printed false. Value 1 - printed true. Value -1 - encountered an error
  */
 int function(set_t *r){
     if (r == NULL){
@@ -801,7 +785,12 @@ int function(set_t *r){
     return 0;
     }
 }
-
+/**
+ * @brief Prints domain of given relation s
+ * 
+ * @param s Pointer to relation s
+ * @return int Value 0 - function finished without errors. Value -1 - encountered an error
+ */
 int domain(set_t *s){
     if (s == NULL ){
         err("Relation undefined\n");
@@ -811,7 +800,6 @@ int domain(set_t *s){
         err("Invalid relation input\n");
         return -1;
     }
-
     printf("S");
     bool printed = false;
     for(int i = 0;i < (s->size)/2;i++){
@@ -823,15 +811,17 @@ int domain(set_t *s){
         if(!printed){
             printf(" %s",relGetLeft(s,i)->word);  
         }
-        printed = false;
-            
+        printed = false;     
     }
     printf("\n");
     return 0;
-    
-
 }
-
+/**
+ * @brief Prints codomain of given relation s
+ * 
+ * @param s Pointer to relation s
+ * @return int Value 0 - function finished without errors. Value -1 - encountered an error
+ */
 int codomain(set_t *s){
     if (s == NULL ){
         err("Relation undefined\n");
@@ -852,11 +842,8 @@ int codomain(set_t *s){
         if(!printed){
             printf(" %s",relGetRight(s,i)->word);  
         }
-        printed = false;
-        
-                   
+        printed = false;          
     }
-    
     printf("\n");
     return 0;
 
@@ -876,9 +863,7 @@ bool injectiveCheck(set_t *r, set_t *a, set_t *b){
     if(r->size!= a->size){
         return false;
     }
-
     bool isInjective=true;
-
     for(int i = 0; i < a->size; i++){
         for(int j = 0; j < b->size; j++){
             if(!strcmp(a->set[i].word, a->set[j].word))
@@ -901,6 +886,7 @@ bool injectiveCheck(set_t *r, set_t *a, set_t *b){
  * @param r Pointer to relation R
  * @param a Pointer to set A (Codomain)
  * @param b Pointer to set B (Domain)
+ * @return int Value 0 - printed false. Value 1 - printed true. Value -1 - encountered an error
  */
 int injective(set_t *r, set_t *a, set_t *b){
     if (r == NULL || a == NULL || b == NULL){
@@ -911,12 +897,10 @@ int injective(set_t *r, set_t *a, set_t *b){
         err("Invalid command\n");
         return -1;
     }
-
     if(!functionCheck(r)){
         printf("false\n");
         return 0;
     }
-
     if(injectiveCheck(r,a,b)){
         printf("true\n");
         return 1;
@@ -937,12 +921,10 @@ int injective(set_t *r, set_t *a, set_t *b){
  * @return false Given relation is not surjective
  */
 bool surjectiveCheck(set_t *r, set_t *a, set_t *b){
-    
     if(r->size!= a->size){
         return false;
     }
     bool isSurjective=false;
-
     for(int i = 0; i < b->size; i++){
         for (int j = 0; j < r->size/2; j++){
             if(!strcmp(b->set[i].word, relGetRight(r,j)->word)){
@@ -963,6 +945,7 @@ bool surjectiveCheck(set_t *r, set_t *a, set_t *b){
  * @param r Pointer to relation R
  * @param a Pointer to set A (Codomain)
  * @param b Pointer to set B (Domain)
+ * @return int Value 0 - printed false. Value 1 - printed true. Value -1 - encountered an error
  */
 int surjective(set_t *r, set_t *a, set_t *b){
     if (r == NULL || a == NULL || b == NULL){
@@ -973,12 +956,10 @@ int surjective(set_t *r, set_t *a, set_t *b){
         err("Invalid command\n");
         return -1;
     }
-
     if(!functionCheck(r)){
         printf("false\n");
         return 0;
     }
-
     if(surjectiveCheck(r,a,b)){
         printf("true\n");
         return 1;
@@ -995,6 +976,7 @@ int surjective(set_t *r, set_t *a, set_t *b){
  * @param r Pointer to relation R
  * @param a Pointer to set A (Codomain)
  * @param b Pointer to set B (Domain)
+ * @return int Value 0 - printed false. Value 1 - printed true. Value -1 - encountered an error
  */
 int bijective(set_t *r, set_t *a, set_t *b){
     if (r == NULL || a == NULL || b == NULL){
@@ -1020,7 +1002,14 @@ int bijective(set_t *r, set_t *a, set_t *b){
     return 0;
     }
 }
-
+/**
+ * @brief Get the index of line
+ * 
+ * @param data Array of pointers to set_t
+ * @param lineCount 
+ * @param i Index of string with line number
+ * @return int Index of line specified in comand
+ */
 int getIndex(set_t **data, int lineCount, int i){
     return strtol(data[lineCount]->set[i].word,NULL,10)-1;
 }
@@ -1030,6 +1019,7 @@ int getIndex(set_t **data, int lineCount, int i){
  * 
  * @param data Dynamically allocated array of pointers to set_t where input is stored
  * @param lineCount Line on which given command is located
+ * @return int Value 0 - function finidhe without errors. Value -1 - encountered an error
  */
 int callOperation(set_t **data,int lineCount){
     
@@ -1214,7 +1204,6 @@ int callOperation(set_t **data,int lineCount){
             return -1;
         }
     }
- 
     else if(!strcmp("surjective",word)){
         if(data[lineCount]->size != 4){
              err("invalid argument of command surjective\n");
@@ -1239,7 +1228,6 @@ int callOperation(set_t **data,int lineCount){
             return -1;
         }
     }
-    
     else{
         err("Command not found!\n");
         return -1;
@@ -1267,10 +1255,14 @@ int subsetElements(set_t *s1, set_t *s2){
             return 0;
         }    
     }
-    
     return 1;
 }
-
+/**
+ * @brief Check whether set s1 does not include FobiddenWords
+ * 
+ * @param s1 Pointer to set s1
+ * @return int Value 1 - No ForbiddenWords found. Value -1 - ForbiddenWords found
+ */
 int subsetElements2(set_t *s1){   
     for(int i = 0;i < s1->size;i++){  
         for(int j = 0; j < FORBIDDEN_WORDS_COUNT;j++){
@@ -1280,18 +1272,15 @@ int subsetElements2(set_t *s1){
         }
     
     }
-    
     return 1;
 }
-
-
 
 /**
  * @brief Checks whether all elements of set are in universe and whether the set is a Set
  * 
  * @param data Dynamically allocated array of pointers to set_t where input is stored
  * @param lineCount Line on which given set is located
- * @return int Value 0(false) - check failed and and error message was printed. Value 1(true) - check successful
+ * @return int Value 1 - finished without errors. Value -1 - encountered an error
  */
 int checkElements(set_t **data, int lineCount){
     if(!subseteqCheck(data[lineCount], data[0])){
@@ -1313,7 +1302,6 @@ int checkElements(set_t **data, int lineCount){
     return 1;
 }
 
-
 /**
  * @brief Parses input file and loads data
  * 
@@ -1332,7 +1320,6 @@ int parse(FILE *file,set_t **data, int *lineCount){
             err("Max line count exceeded\n");
             return -1;
         }
-        
         if(isC == true && c != 'C'){
 
             err("Set declaration after commands\n");
@@ -1343,14 +1330,12 @@ int parse(FILE *file,set_t **data, int *lineCount){
             return -1;
         }
         if(c == 'U' && *lineCount == 0){
-       
             //Struct Universe is being created
             if(fgetc(file) == ' '){
                 setTmp = ctor(U);
                 if(allocLine(file,setTmp) == -1){
                     return -1;
                 }
-             
                 //UN-SUCCESSFUL PASS FORBIDDEN_WORDS INTO UNIVERSE CHECK
 		if(setTmp->type!=C){	
                     if((subsetElements2(setTmp)) == -1){    
@@ -1369,7 +1354,6 @@ int parse(FILE *file,set_t **data, int *lineCount){
             err("Multiple universe definition!\n");
             return -1;
         }
-
         if(c == 'S'){
             int x = fgetc(file);
             isRS = true;
@@ -1378,14 +1362,12 @@ int parse(FILE *file,set_t **data, int *lineCount){
                 setTmp = ctor(S);
                 if(allocLine(file,setTmp) == -1){
                     return -1;
-                }
-                
+                } 
             }
             else{
                 err("No space error\n");
                 return -1;
-            } 
-                 
+            }      
         }
         if(c == 'R'){
             int x = fgetc(file);
@@ -1400,9 +1382,7 @@ int parse(FILE *file,set_t **data, int *lineCount){
             else{
                 err("No space error\n");
                 return -1;
-            }
-                 
-                 
+            } 
         }
         if(c == 'C'){
             isC = true;
@@ -1412,15 +1392,12 @@ int parse(FILE *file,set_t **data, int *lineCount){
                 if(allocLine(file,setTmp) == -1){
                     return -1;
                 }
-            }
-                         
+            }            
         }
         if(c != 'C' && c != 'S' && c != 'R' && c != 'U'){
             err("Error undefined\n");
             return -1;
         }
-          
-        
         data[*lineCount] = setTmp;
         if(setTmp->type != C){
             if(checkElements(data,*lineCount) == -1){
@@ -1429,8 +1406,6 @@ int parse(FILE *file,set_t **data, int *lineCount){
             }
         }
         (*lineCount)++;
-        
-        
     }
     if(!isRS){
         err("Set or relation not found\n");
@@ -1440,21 +1415,15 @@ int parse(FILE *file,set_t **data, int *lineCount){
         err("Command not found\n");
         return -1;
     }
-
     return 0;
 
 }
-
-
-
 
 int main(int argc, char** argv){
     if(argc < 2){
         err("Invalid count of arguments\n");
         return -1;   
     }
-
-
     FILE *input;
     if((input = fopen(argv[1],"r")) == NULL){
         fprintf(stderr,">File '%s' could not be opened\n",argv[1]);
@@ -1468,23 +1437,16 @@ int main(int argc, char** argv){
     int i = 0;
     int count = 0;
     int err_code = parse(input,data,&i); //NACTENI DAT A INICIALIZACE KODOVEHO HLASENI
-    
-    
     if(err_code == -1){
-
-
         while(count < i){
         
             dtor(data[count]);
             count++;  
         }
-
         free(data);
         fclose(input);
         return -1;
     }
-    
-    
     while(count < i){
         if((data[count]->type) != C){
             
@@ -1497,27 +1459,20 @@ int main(int argc, char** argv){
                     dtor(data[count]);
                     count++;  
                 }
-
-                free(data);
-                
-            
+                free(data);       
                 fclose(input);
                 return -1;
             }
         }
         count++;  
     }
-    
     count = 0;
     while(count < i){
         
         dtor(data[count]);
         count++;  
     }
-
     free(data);
-    
- 
     fclose(input);
     return 0;
 }
