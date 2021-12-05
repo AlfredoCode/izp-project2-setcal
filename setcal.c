@@ -90,7 +90,10 @@ void dtor(set_t *s){
 
     }
     for(int i = 0;i < s->size;i++){
-        free(s->set[i].word);
+        if(s->set[i].word != NULL){
+            free(s->set[i].word);
+        }
+        
 
     }
     free(s->set);
@@ -177,6 +180,10 @@ int allocLine(FILE *file,set_t *s){
         if(i >= MAX_LETTERS){
 
             err("Maximum length exceeded\n");
+            return -1;
+        }
+        if(!(c >= 'A' && c <= 'Z')&& !(c >= 'a' && c <= 'z')&& c != '\n' && c != ' ' && c != '(' && c != ')' && !(c >= '0' && c <= '9')){
+            err("Invalid character input\n");
             return -1;
         }
         if(c == ' ' || c=='\n'){
@@ -769,12 +776,18 @@ int domain(set_t *s){
     }
     int count;
     printf("S");
-    for(int i = 0;i < s->size;i++){
-        count = i*2;
-        if(s->size > count){
-            printf(" %s",relGetLeft(s,i)->word);
+    bool printed = false;
+    for(int i = 0;i < (s->size)/2;i++){
+        for(int j = 0;j < i;j++){
+            if(!strcmp(relGetLeft(s,i)->word,relGetLeft(s,j)->word)){
+                printed = true;
+            }
         }
-        
+        if(!printed){
+            printf(" %s",relGetLeft(s,i)->word);  
+        }
+        printed = false;
+            
     }
     printf("\n");
     return 0;
@@ -793,13 +806,21 @@ int codomain(set_t *s){
     }
     int count;
     printf("S");
-    for(int i = 0;i < s->size;i++){
-        count = (i * 2 ) + 1;
-        if(s->size > count){
-            printf(" %s",relGetRight(s,i)->word);
+    bool printed = false;
+    for(int i = 0;i < (s->size)/2;i++){
+        for(int j = 0;j < i;j++){
+            if(!strcmp(relGetRight(s,i)->word,relGetRight(s,j)->word)){
+                printed = true;
+            }
         }
+        if(!printed){
+            printf(" %s",relGetRight(s,i)->word);  
+        }
+        printed = false;
         
+                   
     }
+    
     printf("\n");
     return 0;
 
@@ -865,7 +886,7 @@ int injective(set_t *r, set_t *a, set_t *b){
         return 1;
     }
     else{
-    printf("False\n");
+    printf("false\n");
     return 0;
     }
 }
@@ -927,7 +948,7 @@ int surjective(set_t *r, set_t *a, set_t *b){
         return 1;
     }
     else{
-    printf("False\n");
+    printf("false\n");
     return 0;
     }
 }
@@ -1223,7 +1244,12 @@ int parse(FILE *file,set_t **data, int *lineCount){
     //bool isUniversum = false;
     set_t *setTmp;
     while((c = fgetc(file)) != EOF){
+        if(*lineCount > MAX_LINES){
+            err("Max line count exceeded\n");
+            return -1;
+        }
         //printf("%c",c);
+        
         if(isC == true && c != 'C'){
 
             err("Set declaration after commands\n");
@@ -1308,6 +1334,7 @@ int parse(FILE *file,set_t **data, int *lineCount){
        //setTmp=NULL;
         if(setTmp->type != C){
             if(checkElements(data,*lineCount) == -1){
+                (*lineCount)++;
                 return -1;
             }
         }
