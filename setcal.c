@@ -292,14 +292,14 @@ void printSet(set_t *s){
  * 
  * @param s Pointer to set A
  */
-void empty(set_t *s){
+int empty(set_t *s){
     if (s == NULL ){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(!((s->type == S) || (s->type == U))){
         err("Ivalid command\n");
-        return;
+        return -1;
     }
 
     if(s->size == 0)
@@ -312,14 +312,14 @@ void empty(set_t *s){
  * 
  * @param s Pointer to set A
  */
-void card(set_t *s){
+int card(set_t *s){
     if (s == NULL ){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(!((s->type == S) || (s->type == U))){
         err("Invalid command\n");
-        return;
+        return -1;
     }
     printf("%d\n", s->size);
 }
@@ -330,14 +330,14 @@ void card(set_t *s){
  * @param s1 Pointer to a set A
  * @param s2 Pointer to a set B to which complement is made. In this case always Universe
  */
-void complement(set_t *s1, set_t *s2){
+int complement(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if (!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
         err("Invalid command\n");
-        return;
+        return -1;
     }
     
     bool inSet=false;
@@ -360,14 +360,14 @@ void complement(set_t *s1, set_t *s2){
  * @param s1 Pointer to set A
  * @param s2 Pointer to set B
  */
-void union_set(set_t *s1, set_t *s2){
+int union_set(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
         err("Invalid command\n");
-        return;
+        return -1;
     }
 
     bool inSet = false;
@@ -397,14 +397,14 @@ void union_set(set_t *s1, set_t *s2){
  * @param s1 Pointer to set A
  * @param s2 Pointer to set B
  */
-void intersect(set_t *s1, set_t *s2){
+int intersect(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
         err("Invalid command\n");
-        return;
+        return -1;
     }
 
     bool inSet = false;
@@ -430,14 +430,14 @@ void intersect(set_t *s1, set_t *s2){
  * @param s1 Pointer to set A 
  * @param s2 Pointer to set B
  */
-void minus(set_t *s1, set_t *s2){
+int minus(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
         err("Invalid command\n");
-        return;
+        return -1;
     }
 
     bool inSet = false;
@@ -478,7 +478,6 @@ void subseteq(set_t *a,set_t *b){
     else{
         printf("false\n");
     }
-    return;
 }
 
 /**
@@ -487,17 +486,18 @@ void subseteq(set_t *a,set_t *b){
  * @param s1 Pointer to set A
  * @param s2 Pointer to set B
  */
-void subset(set_t *s1, set_t *s2){
+int subset(set_t *s1, set_t *s2){
     if (s1 == NULL || s2 == NULL){
         err("Set undefined\n");
+        return -1;
     }
     if(!((s1->type == S) || (s1->type == U)) || !((s2->type == S) || (s2->type == U))){
         err("Invalid command\n");
+        return -1;
     }
 
     if(s1->size >= s2->size){
         printf("false\n");
-        return;
     }
 
     bool inSet = false;
@@ -510,7 +510,6 @@ void subset(set_t *s1, set_t *s2){
         }
         if(!inSet){
             printf("false\n");
-            return;
         }
         inSet=false;
     }
@@ -528,13 +527,11 @@ int equals(set_t *s1,set_t *s2){
     }
     if(s1->size != s2->size){
         printf("false\n");
-        return 0;
     }
     bool isEqual = true;
     for(int i = 0;i < s1->size;i++){
         if(isEqual != true){
             printf("false\n");
-            return 0;
         }
         for(int j = 0;j < s2->size;j++){
             if(!strcmp(s1->set[i].word,s2->set[j].word)){
@@ -558,18 +555,17 @@ int equals(set_t *s1,set_t *s2){
  * @param r Pointer to relation R
  * @param s Pointer to set S. in this case always universe
  */
-void reflexive(set_t *r, set_t *s){
+int reflexive(set_t *r, set_t *s){
     if (r == NULL || s == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if((r->type != R) || !(s->type == S || s->type == U)){
         err("Invalid command\n");
-        return;
+        return -1;
     }
     if(r->size/2 < s->size){
         printf("false\n");
-        return;
     }
 
     bool inSet = false;
@@ -583,12 +579,10 @@ void reflexive(set_t *r, set_t *s){
         }
         if(!inSet){
             printf("false\n");
-            return;
         }
         inSet=false;
     }
     printf("true\n");
-    return;
 }
 
 /**
@@ -596,14 +590,14 @@ void reflexive(set_t *r, set_t *s){
  * 
  * @param r Pointer to relation R
  */
-void symmetric(set_t *r){
+int symmetric(set_t *r){
     if (r == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(r->type != R){
         err("Invalid command\n");
-        return;
+        return -1;
     }
 
     bool isSymmetric = false;
@@ -622,12 +616,10 @@ void symmetric(set_t *r){
         }
         if(!isSymmetric){
             printf("false\n");
-            return;
         }
         isSymmetric=false;
     }
     printf("true\n");
-    return;
 }
 
 /**
@@ -635,14 +627,14 @@ void symmetric(set_t *r){
  * 
  * @param r Pointer to relation R
  */
-void antisymmetric(set_t *r){
+int antisymmetric(set_t *r){
     if (r == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(r->type != R){
         err("Invalid command\n");
-        return;
+        return -1;
     }
 
     bool isAntiSymmetric = true;
@@ -661,12 +653,10 @@ void antisymmetric(set_t *r){
         }
         if(!isAntiSymmetric){
             printf("false\n");
-            return;
         }
         isAntiSymmetric=true;
     }
     printf("true\n");
-    return ;
 }
 
 /**
@@ -674,14 +664,14 @@ void antisymmetric(set_t *r){
  * 
  * @param r Pointer to relation R
  */
-void transitive(set_t *r){
+int transitive(set_t *r){
     if (r == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(r->type != R){
         err("Invalid command\n");
-        return;
+        return -1;
     }
 
     bool isTransitive = false;
@@ -696,14 +686,12 @@ void transitive(set_t *r){
                 }
                 if(!isTransitive){
                 printf("false\n");
-                return;
                 }
                 isTransitive=false;
             }
         }
     }
     printf("true\n");
-    return;
 }
 
 /**
@@ -730,14 +718,14 @@ bool functionCheck(set_t *r){
  * 
  * @param r Pointer to relation R
  */
-void function(set_t *r){
+int function(set_t *r){
     if (r == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(r->type != R){
         err("Invalid command\n");
-        return;
+        return -1;
     }
 
     if(functionCheck(r)){
@@ -746,17 +734,16 @@ void function(set_t *r){
     else{
     printf("false\n");
     }
-    return;
 }
 
-void domain(set_t *s){
+int domain(set_t *s){
     if (s == NULL ){
         err("Relation undefined\n");
-        return;
+        return -1;
     }
     if(s->type != R){
         err("Invalid relation input\n");
-        return;
+        return -1;
     }
     int count;
     printf("S ");
@@ -772,14 +759,14 @@ void domain(set_t *s){
 
 }
 
-void codomain(set_t *s){
+int codomain(set_t *s){
     if (s == NULL ){
         err("Relation undefined\n");
-        return;
+        return -1;
     }
     if(s->type != R){
         err("Invalid relation input\n");
-        return;
+        return -1;
     }
     int count;
     printf("S ");
@@ -834,19 +821,18 @@ bool injectiveCheck(set_t *r, set_t *a, set_t *b){
  * @param a Pointer to set A (Codomain)
  * @param b Pointer to set B (Domain)
  */
-void injective(set_t *r, set_t *a, set_t *b){
+int injective(set_t *r, set_t *a, set_t *b){
     if (r == NULL || a == NULL || b == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(r->type != R || !(a->type == S && a->type == U) || !(b->type == S && b->type == U)){
         err("Invalid command\n");
-        return;
+        return -1;
     }
 
     if(!functionCheck(r)){
         printf("false\n");
-        return;
     }
 
     if(injectiveCheck(r,a,b)){
@@ -855,7 +841,6 @@ void injective(set_t *r, set_t *a, set_t *b){
     else{
     printf("False\n");
     }
-    return;
 }
 
 /**
@@ -895,19 +880,18 @@ bool surjectiveCheck(set_t *r, set_t *a, set_t *b){
  * @param a Pointer to set A (Codomain)
  * @param b Pointer to set B (Domain)
  */
-void surjective(set_t *r, set_t *a, set_t *b){
+int surjective(set_t *r, set_t *a, set_t *b){
     if (r == NULL || a == NULL || b == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(r->type != R || !(a->type == S && a->type == U) || !(b->type == S && b->type == U)){
         err("Invalid command\n");
-        return;
+        return -1;
     }
 
     if(!functionCheck(r)){
         printf("false\n");
-        return;
     }
 
     if(surjectiveCheck(r,a,b)){
@@ -916,7 +900,6 @@ void surjective(set_t *r, set_t *a, set_t *b){
     else{
     printf("False\n");
     }
-    return;
 }
 
 /**
@@ -926,19 +909,18 @@ void surjective(set_t *r, set_t *a, set_t *b){
  * @param a Pointer to set A (Codomain)
  * @param b Pointer to set B (Domain)
  */
-void bijective(set_t *r, set_t *a, set_t *b){
+int bijective(set_t *r, set_t *a, set_t *b){
     if (r == NULL || a == NULL || b == NULL){
         err("Set undefined\n");
-        return;
+        return -1;
     }
     if(r->type != R || !(a->type == S && a->type == U) || !(b->type == S && b->type == U)){
         err("Invalid command\n");
-        return;
+        return -1;
     }
 
     if(!functionCheck(r)){
         printf("false\n");
-        return;
     }
 
     if(injectiveCheck(r,a,b) && surjectiveCheck(r,a,b)){
@@ -947,7 +929,6 @@ void bijective(set_t *r, set_t *a, set_t *b){
     else{
     printf("False\n");
     }
-    return;
 }
 
 int getIndex(set_t **data, int lineCount, int i){
@@ -1224,7 +1205,9 @@ int parse(FILE *file,set_t **data, int *lineCount){
             //Struct Universe is being created
             if(fgetc(file) == ' '){
                 setTmp = ctor(U);
-                allocLine(file,setTmp);
+                if(allocLine(file,setTmp) == -1){
+                    return -1;
+                }
                 
                 //UN-SUCCESSFUL PASS FORBIDDEN_WORDS INTO UNIVERSE CHECK
 		if(setTmp->type!=C){	
@@ -1250,7 +1233,9 @@ int parse(FILE *file,set_t **data, int *lineCount){
             //Struct is being created
             if(fgetc(file) == ' '){
                 setTmp = ctor(S);
-                allocLine(file,setTmp);
+                if(allocLine(file,setTmp) == -1){
+                    return -1;
+                }
                 
             } 
                  
@@ -1260,7 +1245,9 @@ int parse(FILE *file,set_t **data, int *lineCount){
             //Struct is relation being created
             if(fgetc(file) == ' '){
                 setTmp = ctor(R);
-                allocLine(file,setTmp);
+                if(allocLine(file,setTmp) == -1){
+                    return -1;
+                }
             } 
                  
                  
@@ -1270,7 +1257,9 @@ int parse(FILE *file,set_t **data, int *lineCount){
 
             if(fgetc(file) == ' '){
                 setTmp = ctor(C);
-                allocLine(file,setTmp);
+                if(allocLine(file,setTmp) == -1){
+                    return -1;
+                }
             }
                 
                 //Commands
@@ -1342,7 +1331,9 @@ int main(int argc, char** argv){
             printSet((data[count]));
         }
         else{
-            callOperation(data,count);
+            if(callOperation(data,count) == -1){
+                return -1;
+            }
         }
         //card((data[count]));
         //complement((data[count]),/*TODO*/);
