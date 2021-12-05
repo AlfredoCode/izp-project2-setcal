@@ -1336,14 +1336,16 @@ int parse(FILE *file,set_t **data, int *lineCount){
                 if(allocLine(file,setTmp) == -1){
                     return -1;
                 }
+            }
+        }
                 //UN-SUCCESSFUL PASS FORBIDDEN_WORDS INTO UNIVERSE CHECK
 		if(setTmp->type!=C){	
                     if((subsetElements2(setTmp)) == -1){    
                         err("Commands or keywords used in universe!\n");
                         return -1;
                     }
-                 }
-            }
+                
+            
             else{
                 err("Universe not defined\n");
                 return -1;
