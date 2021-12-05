@@ -129,7 +129,7 @@ int isSet(set_t set){
     return 1;
 }
 /**
- * @brief Adds set_t values to s.set
+ * @brief Fills s.set with element_t values
  * 
  * @param s Set to which a value is added
  * @param element Word to be added
@@ -243,14 +243,14 @@ int allocLine(FILE *file,set_t *s){
 void printSet(set_t *s){
     switch(s->type){
 	case U:
-		printf("U ");
+		printf("U");
 		break;
 	case R:
-		printf("R ");
+		printf("R");
 		break;
 	
 	case S:
-		printf("S ");
+		printf("S");
 		break;
     default:
 		printf("jiny typ mnoziny");
@@ -263,11 +263,11 @@ void printSet(set_t *s){
     for(int i = 0;i < size;i++){
         
         if(s->type == R){
-            printf("(%s %s) ",relGetLeft(s,i)->word,relGetRight(s,i)->word);
+            printf(" (%s %s)",relGetLeft(s,i)->word,relGetRight(s,i)->word);
 
         }
         else{
-            printf("%s ",s->set[i].word);
+            printf(" %s",s->set[i].word);
         }
         
     }
@@ -305,6 +305,7 @@ int empty(set_t *s){
     if(s->size == 0)
         printf("true\n");
     else printf("false\n"); 
+    return 0;
 }
 
 /**
@@ -322,6 +323,7 @@ int card(set_t *s){
         return -1;
     }
     printf("%d\n", s->size);
+    return 0;
 }
 
 /**
@@ -352,6 +354,7 @@ int complement(set_t *s1, set_t *s2){
         inSet = false;
     }
     printf("\n");
+    return 0;
 }
 
 /**
@@ -388,6 +391,7 @@ int union_set(set_t *s1, set_t *s2){
         inSet=false;
     }
     printf("\n");
+    return 0;
 
 }
 
@@ -422,6 +426,7 @@ int intersect(set_t *s1, set_t *s2){
         inSet=false;
     }
     printf("\n");
+    return 0;
 }
 
 /**
@@ -455,6 +460,7 @@ int minus(set_t *s1, set_t *s2){
         inSet=false;
     }
     printf("\n");
+    return 0;
 }
 
 int subseteqCheck(set_t *s,set_t *uni){
@@ -498,6 +504,7 @@ int subset(set_t *s1, set_t *s2){
 
     if(s1->size >= s2->size){
         printf("false\n");
+        return 0;
     }
 
     bool inSet = false;
@@ -510,10 +517,12 @@ int subset(set_t *s1, set_t *s2){
         }
         if(!inSet){
             printf("false\n");
+            return 0;
         }
         inSet=false;
     }
     printf("true\n");
+    return 1;
 }
 
 int equals(set_t *s1,set_t *s2){
@@ -527,11 +536,13 @@ int equals(set_t *s1,set_t *s2){
     }
     if(s1->size != s2->size){
         printf("false\n");
+        return 0;
     }
     bool isEqual = true;
     for(int i = 0;i < s1->size;i++){
         if(isEqual != true){
             printf("false\n");
+            return 0;
         }
         for(int j = 0;j < s2->size;j++){
             if(!strcmp(s1->set[i].word,s2->set[j].word)){
@@ -566,6 +577,7 @@ int reflexive(set_t *r, set_t *s){
     }
     if(r->size/2 < s->size){
         printf("false\n");
+        return 0;
     }
 
     bool inSet = false;
@@ -579,10 +591,12 @@ int reflexive(set_t *r, set_t *s){
         }
         if(!inSet){
             printf("false\n");
+            return 0;
         }
         inSet=false;
     }
     printf("true\n");
+    return 1;
 }
 
 /**
@@ -616,10 +630,12 @@ int symmetric(set_t *r){
         }
         if(!isSymmetric){
             printf("false\n");
+            return 0;
         }
         isSymmetric=false;
     }
     printf("true\n");
+    return 1;
 }
 
 /**
@@ -653,10 +669,12 @@ int antisymmetric(set_t *r){
         }
         if(!isAntiSymmetric){
             printf("false\n");
+            return 0;
         }
         isAntiSymmetric=true;
     }
     printf("true\n");
+    return 1;
 }
 
 /**
@@ -686,12 +704,14 @@ int transitive(set_t *r){
                 }
                 if(!isTransitive){
                 printf("false\n");
+                return 0;
                 }
                 isTransitive=false;
             }
         }
     }
     printf("true\n");
+    return 1;
 }
 
 /**
@@ -730,9 +750,11 @@ int function(set_t *r){
 
     if(functionCheck(r)){
         printf("true\n");
+        return 1;
     }
     else{
     printf("false\n");
+    return 0;
     }
 }
 
@@ -746,15 +768,16 @@ int domain(set_t *s){
         return -1;
     }
     int count;
-    printf("S ");
+    printf("S");
     for(int i = 0;i < s->size;i++){
         count = i*2;
         if(s->size > count){
-            printf("%s ",relGetLeft(s,i)->word);
+            printf(" %s",relGetLeft(s,i)->word);
         }
         
     }
     printf("\n");
+    return 0;
     
 
 }
@@ -769,15 +792,16 @@ int codomain(set_t *s){
         return -1;
     }
     int count;
-    printf("S ");
+    printf("S");
     for(int i = 0;i < s->size;i++){
         count = (i * 2 ) + 1;
         if(s->size > count){
-            printf("%s ",relGetRight(s,i)->word);
+            printf(" %s",relGetRight(s,i)->word);
         }
         
     }
     printf("\n");
+    return 0;
 
 }
 
@@ -826,20 +850,23 @@ int injective(set_t *r, set_t *a, set_t *b){
         err("Set undefined\n");
         return -1;
     }
-    if(r->type != R || !(a->type == S && a->type == U) || !(b->type == S && b->type == U)){
+    if(r->type != R || !(a->type == S || a->type == U) || !(b->type == S || b->type == U)){
         err("Invalid command\n");
         return -1;
     }
 
     if(!functionCheck(r)){
         printf("false\n");
+        return 0;
     }
 
     if(injectiveCheck(r,a,b)){
         printf("true\n");
+        return 1;
     }
     else{
     printf("False\n");
+    return 0;
     }
 }
 
@@ -885,20 +912,23 @@ int surjective(set_t *r, set_t *a, set_t *b){
         err("Set undefined\n");
         return -1;
     }
-    if(r->type != R || !(a->type == S && a->type == U) || !(b->type == S && b->type == U)){
+    if(r->type != R || !(a->type == S || a->type == U) || !(b->type == S || b->type == U)){
         err("Invalid command\n");
         return -1;
     }
 
     if(!functionCheck(r)){
         printf("false\n");
+        return 0;
     }
 
     if(surjectiveCheck(r,a,b)){
         printf("true\n");
+        return 1;
     }
     else{
     printf("False\n");
+    return 0;
     }
 }
 
@@ -914,20 +944,23 @@ int bijective(set_t *r, set_t *a, set_t *b){
         err("Set undefined\n");
         return -1;
     }
-    if(r->type != R || !(a->type == S && a->type == U) || !(b->type == S && b->type == U)){
+    if(r->type != R || !(a->type == S || a->type == U) || !(b->type == S || b->type == U)){
         err("Invalid command\n");
         return -1;
     }
 
     if(!functionCheck(r)){
         printf("false\n");
+        return 0;
     }
 
     if(injectiveCheck(r,a,b) && surjectiveCheck(r,a,b)){
         printf("true\n");
+        return 1;
     }
     else{
-    printf("False\n");
+    printf("false\n");
+    return 0;
     }
 }
 
@@ -1080,7 +1113,7 @@ int callOperation(set_t **data,int lineCount){
         codomain(data[setLine1]);
     }
     else if(!strcmp("injective",word)){
-        if(data[lineCount]->size != 3){
+        if(data[lineCount]->size != 4){
              err("invalid argument of command injective\n");
              return -1;
         }
@@ -1091,7 +1124,7 @@ int callOperation(set_t **data,int lineCount){
     }
  
     else if(!strcmp("surjective",word)){
-        if(data[lineCount]->size != 3){
+        if(data[lineCount]->size != 4){
              err("invalid argument of command surjective\n");
              return -1;
         }
@@ -1101,7 +1134,7 @@ int callOperation(set_t **data,int lineCount){
         surjective(data[setLine1], data[setLine2], data[setLine3]);
     }
     else if(!strcmp("bijective",word)){
-        if(data[lineCount]->size != 3){
+        if(data[lineCount]->size != 4){
              err("invalid argument of command bijective\n");
              return -1;
         }
