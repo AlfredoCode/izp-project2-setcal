@@ -117,6 +117,8 @@ int setContains(set_t set, element_t element){
     }
     return count;
 }
+
+
 /**
  * @brief Checks if given set_t is a Set
  * 
@@ -131,19 +133,32 @@ int isSet(set_t set){
     }
     return 1;
 }
+
+int isRel(set_t rel){
+    for(int i = 0;i < (rel.size)/2;i++){
+        for(int j = 0;j < i;j++){
+            if(!strcmp(relGetLeft(&rel,i)->word, relGetLeft(&rel,j)->word) && !strcmp(relGetRight(&rel,i)->word, relGetRight(&rel,j)->word)){
+                return 0;
+            }   
+        }
+        
+    }
+    return 1;
+
+}
 /**
  * @brief Fills s.set with element_t values
  * 
  * @param s Set to which a value is added
  * @param element Word to be added
  */
-// We should probably rename this function to add
-// Also why char * Element why not word - Michal
-void fill(set_t *s, char *element){
+
+int fill(set_t *s, char *element){
     if(s->size == 0){
         s->set = malloc(sizeof(element_t));
         if(s->set == NULL){
-            errAlloc();    
+            errAlloc(); 
+            return -1;   
         }
         
         
@@ -152,12 +167,14 @@ void fill(set_t *s, char *element){
         s->set = realloc(s->set, sizeof(element_t) * (s->size+1));
         if(s->set == NULL){
             errAlloc();
+            return -1;
         }
         
     }
     s->set[s->size].word = malloc(sizeof(element_t));
     if(s->set[s->size].word == NULL){
         errAlloc();
+        return -1;
     }
     strcpy(s->set[s->size].word, element);
     (s->size)++;
@@ -182,16 +199,25 @@ int allocLine(FILE *file,set_t *s){
             err("Maximum length exceeded\n");
             return -1;
         }
+        if(s->type != C){
+            if(c >= '0' && c <= '9'){
+                err("Number input in sets / relations\n");
+                return -1;
+            }
+        }
         if(!(c >= 'A' && c <= 'Z')&& !(c >= 'a' && c <= 'z')&& c != '\n' && c != ' ' && c != '(' && c != ')' && !(c >= '0' && c <= '9')){
             err("Invalid character input\n");
             return -1;
         }
         if(c == ' ' || c=='\n'){
             //Add to struct
+            
             word[i] = '\0';
             //printf("%s %d\n", word,strlen(word));
             if(strlen(word)>0){
-	            fill(s, word);
+	            if(fill(s, word) == -1){
+                    return -1;
+                }
    	        }
             if(inRelation==true){
                 elNumber++;
@@ -234,12 +260,7 @@ int allocLine(FILE *file,set_t *s){
        
         i++;
     }
-    //if(c != EOF){     //DOES NOT WORK FOR LAST STRING ON LAST LINE
-        /*word[i] = '\0';
-        fill(s, word);*/
-    //}
-
-    
+  
     return 0;
 }
 /**
@@ -281,16 +302,6 @@ void printSet(set_t *s){
     printf("\n");
 }
 
-
-/*int convertToNum(char *string)
-{
-    char end;
-    int value = strtol(string, &end, 10);
-    if( (end == string) || (end != '\0'))
-        return 0;
-    else
-        return value;
-}*/
 
 
 /**
@@ -996,6 +1007,7 @@ int getIndex(set_t **data, int lineCount, int i){
  * @param lineCount Line on which given command is located
  */
 int callOperation(set_t **data,int lineCount){
+    
     char *word = data[lineCount]->set[0].word;
     
     if(!strcmp(word,"empty")){
@@ -1164,6 +1176,7 @@ int callOperation(set_t **data,int lineCount){
         long setLine3 = getIndex(data,lineCount,3);
         bijective(data[setLine1], data[setLine2], data[setLine3]);
     }
+    
     else{
         err("Command not found!\n");
     }
@@ -1207,6 +1220,8 @@ int subsetElements2(set_t *s1){
     return 1;
 }
 
+
+
 /**
  * @brief Checks whether all elements of set are in universe and whether the set is a Set
  * 
@@ -1225,6 +1240,12 @@ int checkElements(set_t **data, int lineCount){
             return -1;      
         }
     }
+    if(data[lineCount]->type == R){
+        if(!isRel(*(data[lineCount]))){
+            err("Invalid relation!\n");
+            return -1;      
+        }
+    }
     return 1;
 }
 
@@ -1239,35 +1260,33 @@ int checkElements(set_t **data, int lineCount){
  */
 int parse(FILE *file,set_t **data, int *lineCount){
     int c;
-    //int charPos = 0;
     bool isC = false;
-    //bool isUniversum = false;
     set_t *setTmp;
+
     while((c = fgetc(file)) != EOF){
         if(*lineCount > MAX_LINES){
             err("Max line count exceeded\n");
             return -1;
         }
-        //printf("%c",c);
         
         if(isC == true && c != 'C'){
 
             err("Set declaration after commands\n");
-            return -1; //TODO
+            return -1; 
         }
         if(c != 'U' && *lineCount == 0){
             err("Universe not defined!\n");
             return -1;
         }
         if(c == 'U' && *lineCount == 0){
-            
+       
             //Struct Universe is being created
             if(fgetc(file) == ' '){
                 setTmp = ctor(U);
                 if(allocLine(file,setTmp) == -1){
                     return -1;
                 }
-                
+             
                 //UN-SUCCESSFUL PASS FORBIDDEN_WORDS INTO UNIVERSE CHECK
 		if(setTmp->type!=C){	
                     if((subsetElements2(setTmp)) == -1){    
@@ -1296,6 +1315,10 @@ int parse(FILE *file,set_t **data, int *lineCount){
                     return -1;
                 }
                 
+            }
+            else{
+                err("No space error\n");
+                return -1;
             } 
                  
         }
@@ -1320,30 +1343,19 @@ int parse(FILE *file,set_t **data, int *lineCount){
                     return -1;
                 }
             }
-                
-                //Commands
-               /*printf("Command read\n");
-               (*lineCount)++;
-               return 0;*/
-                 
+                         
         }
 
           
         
         data[*lineCount] = setTmp;
-       //setTmp=NULL;
         if(setTmp->type != C){
             if(checkElements(data,*lineCount) == -1){
                 (*lineCount)++;
                 return -1;
             }
         }
-        //printf("%s",data[lineCount]->set[lineCount].word);
         (*lineCount)++;
-
-        //printSet(setTmp);
-        //charPos++;
-        //printSet((setTmp));
     }
 
     return 0;
@@ -1368,6 +1380,7 @@ int main(int argc, char** argv){
     set_t **data = (set_t **)malloc(sizeof(set_t*)*MAX_LINES);
     if(data == NULL){
         errAlloc();
+        return -1;
     }
     int i = 0;
     int count = 0;
@@ -1395,9 +1408,6 @@ int main(int argc, char** argv){
                 return -1;
             }
         }
-        //card((data[count]));
-        //complement((data[count]),/*TODO*/);
-        //dtor(data[count]);
         count++;  
     }
     
