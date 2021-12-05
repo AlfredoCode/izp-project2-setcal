@@ -457,7 +457,7 @@ void minus(set_t *s1, set_t *s2){
     printf("\n");
 }
 
-int subseteq(set_t *s,set_t *uni){
+int subseteqCheck(set_t *s,set_t *uni){
     int count = 0;
     for(int i = 0;i < s->size;i++){
         for(int j = 0; j < uni->size;j++){
@@ -470,6 +470,15 @@ int subseteq(set_t *s,set_t *uni){
   	return 0;
      }
      return 1;
+}
+void subseteq(set_t *a,set_t *b){
+    if(subseteqCheck(a, b)){
+        printf("true\n");
+    }
+    else{
+        printf("false\n");
+    }
+    return;
 }
 
 /**
@@ -542,26 +551,203 @@ int equals(set_t *s1,set_t *s2){
     return 1;
 
 }
-/*
-void reflexive(set_t **data,int index){
+
+/**
+ * @brief Prints true if given relation R is reflexive on S
+ * 
+ * @param r Pointer to relation R
+ * @param s Pointer to set S. in this case always universe
+ */
+void reflexive(set_t *r, set_t *s){
+    if (r == NULL || s == NULL){
+        err("Set undefined\n");
+        return;
+    }
+    if((r->type != R) || !(s->type == S || s->type == U)){
+        err("Invalid command\n");
+        return;
+    }
+    if(r->size/2 < s->size){
+        printf("false\n");
+        return;
+    }
+
+    bool inSet = false;
+
+    for(int i = 0; i < s->size; i++){
+        for(int j = 0; j < r->size/2; j++){
+            if(!strcmp(s->set[i].word, relGetLeft(r,j)->word) && !strcmp(s->set[i].word, relGetRight(r,j)->word))
+            {
+                inSet = true;
+            }
+        }
+        if(!inSet){
+            printf("false\n");
+            return;
+        }
+        inSet=false;
+    }
+    printf("true\n");
+    return;
+}
+
+/**
+ * @brief Prints true if given relation R is symmetric
+ * 
+ * @param r Pointer to relation R
+ */
+void symmetric(set_t *r){
+    if (r == NULL){
+        err("Set undefined\n");
+        return;
+    }
+    if(r->type != R){
+        err("Invalid command\n");
+        return;
+    }
+
+    bool isSymmetric = false;
+
+    for(int i = 0; i < r->size/2; i++){
+        if (!strcmp(relGetLeft(r,i)->word, relGetRight(r, i)->word))
+            continue;
+        for(int j = 0; j < r->size/2; j++){
+            if(i==j){
+                continue;
+            }
+            if(!strcmp(relGetLeft(r,i)->word, relGetRight(r, j)->word) && !strcmp(relGetRight(r, i)->word, relGetLeft(r, j)->word))
+            {
+                isSymmetric = true;
+            }
+        }
+        if(!isSymmetric){
+            printf("false\n");
+            return;
+        }
+        isSymmetric=false;
+    }
+    printf("true\n");
+    return;
+}
+
+/**
+ * @brief Prints true if given relation R is Antisymmetric
+ * 
+ * @param r Pointer to relation R
+ */
+void antisymmetric(set_t *r){
+    if (r == NULL){
+        err("Set undefined\n");
+        return;
+    }
+    if(r->type != R){
+        err("Invalid command\n");
+        return;
+    }
+
+    bool isAntiSymmetric = true;
+
+    for(int i = 0; i < r->size/2; i++){
+        if (!strcmp(relGetLeft(r, i)->word,relGetRight(r, i)->word))
+            continue;
+        for(int j = 0; j < r->size/2; j++){
+            if(i==j){
+                continue;
+            }
+            if(!strcmp(relGetLeft(r,i)->word, relGetRight(r, j)->word) && !strcmp(relGetRight(r, i)->word, relGetLeft(r, j)->word))
+            {
+                isAntiSymmetric = false;
+            }
+        }
+        if(!isAntiSymmetric){
+            printf("false\n");
+            return;
+        }
+        isAntiSymmetric=true;
+    }
+    printf("true\n");
+    return ;
+}
+
+/**
+ * @brief Prints true if given relation R is transitive
+ * 
+ * @param r Pointer to relation R
+ */
+void transitive(set_t *r){
+    if (r == NULL){
+        err("Set undefined\n");
+        return;
+    }
+    if(r->type != R){
+        err("Invalid command\n");
+        return;
+    }
+
+    bool isTransitive = false;
+
+    for(int i = 0; i < r->size/2; i++){
+        for(int j = 0; j < r->size/2; j++){
+            if(!strcmp(relGetRight(r, i)->word, relGetLeft(r, j)->word)){
+                for(int k = 0; k < r->size/2; k++){
+                    if(!strcmp(relGetLeft(r, i)->word, relGetLeft(r, k)->word) && !strcmp(relGetRight(r, j)->word, relGetRight(r, k)->word)){
+                        isTransitive=true;
+                    }
+                }
+                if(!isTransitive){
+                printf("false\n");
+                return;
+                }
+                isTransitive=false;
+            }
+        }
+    }
+    printf("true\n");
+    return;
+}
+
+/**
+ * @brief checks whether given relation R is a funciton
+ * 
+ * @param r Pointer to relation R
+ * @return true Given relation is a function
+ * @return false Given relation is not a function
+ */
+bool functionCheck(set_t *r){
+    for(int i = 0; i < r->size/2; i++){
+        for(int j = 0; j < r->size/2; j++){
+            if(!strcmp(relGetLeft(r, i)->word, relGetLeft(r, j)->word) && strcmp(relGetRight(r,i)->word, relGetRight(r, j)->word)){
+                return false;
+            }
+        }
+    }
+    return true;
 
 }
 
-void symmetric(set_t **data,int index){
+/**
+ * @brief Prints true if given relation R is a function
+ * 
+ * @param r Pointer to relation R
+ */
+void function(set_t *r){
+    if (r == NULL){
+        err("Set undefined\n");
+        return;
+    }
+    if(r->type != R){
+        err("Invalid command\n");
+        return;
+    }
 
+    if(functionCheck(r)){
+        printf("true\n");
+    }
+    else{
+    printf("false\n");
+    }
+    return;
 }
-
-void antisymmetric(set_t **data,int index){
-
-}
-
-void transitive(set_t **data,int index){
-
-}
-
-void function(set_t **data,int index){
-
-}*/
 
 void domain(set_t *s){
     if (s == NULL ){
@@ -607,22 +793,166 @@ void codomain(set_t *s){
     printf("\n");
 
 }
-/*
-void injective(set_t **data,int index){
 
+/**
+ * @brief Checks whether given relation R is injective on sets A and B
+ * 
+ * @param r Pointer to relation R
+ * @param a Pointer to set A (Codomain)
+ * @param b Pointer to set B (Domain)
+ * @return true Given relation is injective
+ * @return false Given relation is not injective
+ */
+bool injectiveCheck(set_t *r, set_t *a, set_t *b){
+    
+    if(r->size!= a->size){
+        return false;
+    }
 
+    bool isInjective=true;
+
+    for(int i = 0; i < a->size; i++){
+        for(int j = 0; j < b->size; j++){
+            if(!strcmp(a->set[i].word, a->set[j].word))
+                continue;
+            if(strcmp(a->set[i].word, a->set[j].word) && !strcmp(b->set[i].word,b->set[j].word)){
+                isInjective=false;
+            }
+            if(!isInjective){
+                return isInjective;
+            }
+            isInjective = true;
+        }
+    }
+    return isInjective;
 }
 
-void surjective(set_t **data,int index){
+/**
+ * @brief Prints true if given relation R is injective on sets A and B
+ * 
+ * @param r Pointer to relation R
+ * @param a Pointer to set A (Codomain)
+ * @param b Pointer to set B (Domain)
+ */
+void injective(set_t *r, set_t *a, set_t *b){
+    if (r == NULL || a == NULL || b == NULL){
+        err("Set undefined\n");
+        return;
+    }
+    if(r->type != R || !(a->type == S && a->type == U) || !(b->type == S && b->type == U)){
+        err("Invalid command\n");
+        return;
+    }
 
+    if(!functionCheck(r)){
+        printf("false\n");
+        return;
+    }
 
+    if(injectiveCheck(r,a,b)){
+        printf("true\n");
+    }
+    else{
+    printf("False\n");
+    }
+    return;
 }
 
-void bijective(set_t **data,int index){
+/**
+ * @brief Checks whether given relation R is surjective on sets A and B
+ * 
+ * @param r Pointer to relation R
+ * @param a Pointer to set A (Codomain)
+ * @param b Pointer to set B (Domain)
+ * @return true Given relation is surjective
+ * @return false Given relation is not surjective
+ */
+bool surjectiveCheck(set_t *r, set_t *a, set_t *b){
+    
+    if(r->size!= a->size){
+        return false;
+    }
+    bool isSurjective=false;
 
-
+    for(int i = 0; i < b->size; i++){
+        for (int j = 0; j < r->size/2; j++){
+            if(!strcmp(b->set[i].word, relGetRight(r,j)->word)){
+                isSurjective = true;
+            }
+        }
+        if(!isSurjective){
+            return false;
+        }
+        isSurjective=false;
+    }
+    return true;
 }
-*/
+
+/**
+ * @brief Prints true if given relation R is surjective on sets A and B
+ * 
+ * @param r Pointer to relation R
+ * @param a Pointer to set A (Codomain)
+ * @param b Pointer to set B (Domain)
+ */
+void surjective(set_t *r, set_t *a, set_t *b){
+    if (r == NULL || a == NULL || b == NULL){
+        err("Set undefined\n");
+        return;
+    }
+    if(r->type != R || !(a->type == S && a->type == U) || !(b->type == S && b->type == U)){
+        err("Invalid command\n");
+        return;
+    }
+
+    if(!functionCheck(r)){
+        printf("false\n");
+        return;
+    }
+
+    if(surjectiveCheck(r,a,b)){
+        printf("true\n");
+    }
+    else{
+    printf("False\n");
+    }
+    return;
+}
+
+/**
+ * @brief Prints true if given relation R is bijective on sets A and B
+ * 
+ * @param r Pointer to relation R
+ * @param a Pointer to set A (Codomain)
+ * @param b Pointer to set B (Domain)
+ */
+void bijective(set_t *r, set_t *a, set_t *b){
+    if (r == NULL || a == NULL || b == NULL){
+        err("Set undefined\n");
+        return;
+    }
+    if(r->type != R || !(a->type == S && a->type == U) || !(b->type == S && b->type == U)){
+        err("Invalid command\n");
+        return;
+    }
+
+    if(!functionCheck(r)){
+        printf("false\n");
+        return;
+    }
+
+    if(injectiveCheck(r,a,b) && surjectiveCheck(r,a,b)){
+        printf("true\n");
+    }
+    else{
+    printf("False\n");
+    }
+    return;
+}
+
+int getIndex(set_t **data, int lineCount, int i){
+    return strtol(data[lineCount]->set[i].word,NULL,10)-1;
+}
 
 /**
  * @brief Decides which command function to execute
@@ -638,7 +968,7 @@ int callOperation(set_t **data,int lineCount){
             err("invalid argument of command empty");
             return -1;
         }
-        int setLine = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+        int setLine = getIndex(data,lineCount,1);
         empty(data[setLine]);
     }
     else if(!strcmp("card",word)){
@@ -646,15 +976,15 @@ int callOperation(set_t **data,int lineCount){
             err("invalid argument of command card\n");
             return -1;
         }
-        long setLine = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+        long setLine = getIndex(data,lineCount,1);
         card(data[setLine]);
     }
     else if(!strcmp("complement",word)){
         if(data[lineCount]->size!=2){
-            err("invalid argument of command card\n");
+            err("invalid argument of command complement\n");
             return -1;
         }
-        long setLine = strtol(data[lineCount]->set[1].word,NULL,10)-1;
+        long setLine = getIndex(data,lineCount,1);
         
         complement(data[setLine], data[0]);
     }
@@ -663,39 +993,44 @@ int callOperation(set_t **data,int lineCount){
              err("invalid argument of command union\n");
              return -1;
          }
-         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10)-1;
-         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10)-1;
+         long setLine1 = getIndex(data,lineCount,1);
+         long setLine2 = getIndex(data,lineCount,2);
          union_set(data[setLine1],data[setLine2]);
     }
     else if(!strcmp("intersect",word)){
          if(data[lineCount]->size != 3){
-             err("invalid argument of command union\n");
+             err("invalid argument of command intersect\n");
              return -1;
          }
-         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10)-1;
-         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10)-1;
+         long setLine1 = getIndex(data,lineCount,1);
+         long setLine2 = getIndex(data,lineCount,2);
          intersect(data[setLine1],data[setLine2]);
     }
     else if(!strcmp("minus",word)){
         if(data[lineCount]->size != 3){
-             err("invalid argument of command union\n");
+             err("invalid argument of command minus\n");
              return -1;
          }
-         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10)-1;
-         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10)-1;
+         long setLine1 = getIndex(data,lineCount,1);
+         long setLine2 = getIndex(data,lineCount,2);
          minus(data[setLine1],data[setLine2]);
     }
     else if(!strcmp("subseteq",word)){
-     	err("subseteq is not implemented yet\n");
-	    //subseteq(data, lineCount);
+     	if(data[lineCount]->size != 3){
+             err("invalid argument of command subseteq\n");
+             return -1;
+         }
+         long setLine1 = getIndex(data,lineCount,1);
+         long setLine2 = getIndex(data,lineCount,2);
+         subseteq(data[setLine1],data[setLine2]);
     }
     else if(!strcmp("subset",word)){
      	if(data[lineCount]->size != 3){
-             err("invalid argument of command union\n");
+             err("invalid argument of command subset\n");
              return -1;
          }
-         long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10)-1;
-         long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10)-1;
+         long setLine1 = getIndex(data,lineCount,1);
+         long setLine2 = getIndex(data,lineCount,2);
          subset(data[setLine1],data[setLine2]);
     }
     else if(!strcmp("equals",word)){
@@ -703,74 +1038,103 @@ int callOperation(set_t **data,int lineCount){
              err("invalid argument of command equals\n");
              return -1;
         }
-        long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10)-1;
-        long setLine2 = strtol(data[lineCount]->set[2].word,NULL,10)-1;
+        long setLine1 = getIndex(data,lineCount,1);
+        long setLine2 = getIndex(data,lineCount,2);
         equals(data[setLine1],data[setLine2]);
     }
     else if(!strcmp("reflexive",word)){
-     	err("reflexive is not implemented yet\n");
-//	reflexive(data, lineCount);
+        if(data[lineCount]->size!=2){
+            err("invalid argument of command reflexive");
+            return -1;
+        }
+        int setLine = getIndex(data,lineCount,1);
+        reflexive(data[setLine], data[0]);
     }
     else if(!strcmp("symmetric",word)){
-     	err("symmetric is not implemented yet\n");
-//	symmetric(data, lineCount);
+     	if(data[lineCount]->size!=2){
+            err("invalid argument of command symmetric");
+            return -1;
+        }
+        int setLine = getIndex(data,lineCount,1);
+        symmetric(data[setLine]);
     }
     else if(!strcmp("antisymmetric",word)){
- 
-     	err("antisymmetric is not implemented yet\n");     
-  //	antisymmetric(data, lineCount);
+        if(data[lineCount]->size!=2){
+            err("invalid argument of command antisymmetric");
+            return -1;
+        }
+        int setLine = getIndex(data,lineCount,1);
+        antisymmetric(data[setLine]);
     }
     else if(!strcmp("transitive",word)){
- 
-     	err("transitive is not implemented yet\n");
-    // 	transitive(data, lineCount);
+        if(data[lineCount]->size!=2){
+            err("invalid argument of command transitive");
+            return -1;
+        }
+        int setLine = getIndex(data,lineCount,1);
+        transitive(data[setLine]);
     }
     else if(!strcmp("function",word)){
- 
-     	err("function is not implemented yet\n");
-     //  	function(data, lineCount);
+        if(data[lineCount]->size!=2){
+            err("invalid argument of command function");
+            return -1;
+        }
+        int setLine = getIndex(data,lineCount,1);
+        function(data[setLine]);
     }
     else if(!strcmp("domain",word)){
         if(data[lineCount]->size != 2){
              err("invalid argument of command domain\n");
              return -1;
         }
-        long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10);
+        long setLine1 = getIndex(data,lineCount,1);
         domain(data[setLine1]);
-     	//err("domain is not implemented yet\n");
-     //   domain(data, lineCount);
     }
     else if(!strcmp("codomain",word)){
         if(data[lineCount]->size != 2){
              err("invalid argument of command codomain\n");
              return -1;
         }
-        long setLine1 = strtol(data[lineCount]->set[1].word,NULL,10);
+        long setLine1 = getIndex(data,lineCount,1);
         codomain(data[setLine1]);
-     	//err("codomain is not implemented yet\n");    
-   //	codomain(data, lineCount);
     }
     else if(!strcmp("injective",word)){
-
-     	err("injective is not implemented yet\n");
-     //   injective(data, lineCount);
+        if(data[lineCount]->size != 3){
+             err("invalid argument of command injective\n");
+             return -1;
+        }
+        long setLine1 = getIndex(data,lineCount,1);
+        long setLine2 = getIndex(data,lineCount,2);
+        long setLine3 = getIndex(data,lineCount,3);
+        injective(data[setLine1], data[setLine2], data[setLine3]);
     }
  
     else if(!strcmp("surjective",word)){
-
-     	err("surjective is not implemented yet\n");
-     //   surjective(data, lineCount);
+        if(data[lineCount]->size != 3){
+             err("invalid argument of command surjective\n");
+             return -1;
+        }
+        long setLine1 = getIndex(data,lineCount,1);
+        long setLine2 = getIndex(data,lineCount,2);
+        long setLine3 = getIndex(data,lineCount,3);
+        surjective(data[setLine1], data[setLine2], data[setLine3]);
     }
     else if(!strcmp("bijective",word)){
-
-     	err("bijective is not implemented yet\n");
-     //   bijective(data, lineCount);
+        if(data[lineCount]->size != 3){
+             err("invalid argument of command bijective\n");
+             return -1;
+        }
+        long setLine1 = getIndex(data,lineCount,1);
+        long setLine2 = getIndex(data,lineCount,2);
+        long setLine3 = getIndex(data,lineCount,3);
+        bijective(data[setLine1], data[setLine2], data[setLine3]);
     }
     else{
         err("Command not found!\n");
     }
     return 0;
 }
+
 /**
  * @brief Checks whether s1 is subset of s2
  * 
@@ -816,7 +1180,7 @@ int subsetElements2(set_t *s1){
  * @return int Value 0(false) - check failed and and error message was printed. Value 1(true) - check successful
  */
 int checkElements(set_t **data, int lineCount){
-    if(!subseteq(data[lineCount], data[0])){
+    if(!subseteqCheck(data[lineCount], data[0])){
        err("Set element not defined in universe!\n");
        return -1; 
     }
