@@ -8,7 +8,6 @@
 #define FORBIDDEN_WORDS_COUNT 21
 #define FORBIDDEN_WORDS_MAX_LENGTH 15
 enum set_type{U,S,R,C};
-enum error_type{U_};
 
 
 char *ForbiddenWords [FORBIDDEN_WORDS_COUNT] =  {
@@ -39,6 +38,7 @@ void errAlloc(){
     err("Memory allocation failed\n");
 }
 
+
 typedef struct{
     char *word;
 
@@ -48,13 +48,26 @@ typedef struct{
     element_t *set;
     int size;
     int type;
-
 }set_t;
 
-
+/**
+ * @brief Gets left element from given relation 
+ * 
+ * @param relation Pointer to set of relations
+ * @param index Index of given relation
+ * @return element_t* Pointer to left element of relation 
+ */
 element_t * relGetLeft(set_t *relation,int index){
 	return &(relation->set[index*2]);
 }
+
+/**
+ * @brief Gets right element from given relation 
+ * 
+ * @param relation Pointer to set of relations
+ * @param index Index of given relation
+ * @return element_t* Pointer to right element of relation 
+ */
 element_t * relGetRight(set_t *relation,int index){
 	return &(relation->set[(index*2)+1]);
 }
@@ -76,6 +89,7 @@ set_t *ctor(int type){
     s->size = 0;
     return s;
 }
+
 /**
  * @brief Systematically frees s.set and then the set itself
  * 
@@ -87,14 +101,11 @@ void dtor(set_t *s){
     }
     if(s->set == NULL){
         return;
-
     }
     for(int i = 0;i < s->size;i++){
         if(s->set[i].word != NULL){
             free(s->set[i].word);
-        }
-        
-
+        }   
     }
     free(s->set);
     free(s);
@@ -109,7 +120,6 @@ void dtor(set_t *s){
  */
 int setContains(set_t set, element_t element){
     int count = 0;
-
     for(int i = 0;i < set.size;i++){
         if(!strcmp(set.set[i].word, element.word)){
             count++;
@@ -117,7 +127,6 @@ int setContains(set_t set, element_t element){
     }
     return count;
 }
-
 
 /**
  * @brief Checks if given set_t is a Set
@@ -134,42 +143,43 @@ int isSet(set_t set){
     return 1;
 }
 
+/**
+ * @brief Checks if given set_t is a set of relations
+ * 
+ * @param rel Set_t to be checked
+ * @return int Value 0(false) - set_t rel is not a set of relations. Value 1(true) - set_t rel is a set of relations
+ */
 int isRel(set_t rel){
     for(int i = 0;i < (rel.size)/2;i++){
         for(int j = 0;j < i;j++){
             if(!strcmp(relGetLeft(&rel,i)->word, relGetLeft(&rel,j)->word) && !strcmp(relGetRight(&rel,i)->word, relGetRight(&rel,j)->word)){
                 return 0;
             }   
-        }
-        
+        }    
     }
     return 1;
-
 }
+
 /**
  * @brief Fills s.set with element_t values
  * 
  * @param s Set to which a value is added
  * @param element Word to be added
  */
-
 int fill(set_t *s, char *element){
     if(s->size == 0){
         s->set = malloc(sizeof(element_t));
         if(s->set == NULL){
             errAlloc(); 
             return -1;   
-        }
-        
-        
+        }         
     }
     else{
         s->set = realloc(s->set, sizeof(element_t) * (s->size+1));
         if(s->set == NULL){
             errAlloc();
             return -1;
-        }
-        
+        }  
     }
     s->set[s->size].word = malloc(sizeof(element_t));
     if(s->set[s->size].word == NULL){
@@ -178,6 +188,7 @@ int fill(set_t *s, char *element){
     }
     strcpy(s->set[s->size].word, element);
     (s->size)++;
+    return 0;
 
 }
 /**
@@ -213,7 +224,8 @@ int allocLine(FILE *file,set_t *s){
             //Add to struct
             
             word[i] = '\0';
-            //printf("%s %d\n", word,strlen(word));
+            
+            
             if(strlen(word)>0){
 	            if(fill(s, word) == -1){
                     return -1;
@@ -260,7 +272,7 @@ int allocLine(FILE *file,set_t *s){
        
         i++;
     }
-  
+    
     return 0;
 }
 /**
@@ -316,7 +328,7 @@ int empty(set_t *s){
         return -1;
     }
     if(!((s->type == S) || (s->type == U))){
-        err("Ivalid command\n");
+        err("Invalid command\n");
         return -1;
     }
 
@@ -495,12 +507,22 @@ int subseteqCheck(set_t *s,set_t *uni){
      }
      return 1;
 }
-void subseteq(set_t *a,set_t *b){
+int subseteq(set_t *a,set_t *b){
+    if (a == NULL || b == NULL){
+        err("Set undefined\n");
+        return -1;
+    }
+    if(!((a->type == S) || (a->type == U)) || !((b->type == S) || (b->type == U))){
+        err("Invalid command\n");
+        return -1;
+    }
     if(subseteqCheck(a, b)){
         printf("true\n");
+        return 1;
     }
     else{
         printf("false\n");
+        return 0;
     }
 }
 
@@ -572,6 +594,10 @@ int equals(set_t *s1,set_t *s2){
             }
 
         }
+    }
+    if(isEqual == false){
+        printf("false\n");
+        return 0;
     }
     printf("true\n");
     return 1;
@@ -785,7 +811,7 @@ int domain(set_t *s){
         err("Invalid relation input\n");
         return -1;
     }
-    int count;
+
     printf("S");
     bool printed = false;
     for(int i = 0;i < (s->size)/2;i++){
@@ -815,7 +841,6 @@ int codomain(set_t *s){
         err("Invalid relation input\n");
         return -1;
     }
-    int count;
     printf("S");
     bool printed = false;
     for(int i = 0;i < (s->size)/2;i++){
@@ -1016,7 +1041,9 @@ int callOperation(set_t **data,int lineCount){
             return -1;
         }
         int setLine = getIndex(data,lineCount,1);
-        empty(data[setLine]);
+        if(empty(data[setLine]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("card",word)){
         if(data[lineCount]->size!=2){
@@ -1024,7 +1051,9 @@ int callOperation(set_t **data,int lineCount){
             return -1;
         }
         long setLine = getIndex(data,lineCount,1);
-        card(data[setLine]);
+        if(card(data[setLine]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("complement",word)){
         if(data[lineCount]->size!=2){
@@ -1033,7 +1062,9 @@ int callOperation(set_t **data,int lineCount){
         }
         long setLine = getIndex(data,lineCount,1);
         
-        complement(data[setLine], data[0]);
+        if(complement(data[setLine], data[0]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("union",word)){
          if(data[lineCount]->size != 3){
@@ -1042,7 +1073,9 @@ int callOperation(set_t **data,int lineCount){
          }
          long setLine1 = getIndex(data,lineCount,1);
          long setLine2 = getIndex(data,lineCount,2);
-         union_set(data[setLine1],data[setLine2]);
+         if(union_set(data[setLine1],data[setLine2]) == -1){
+             return -1;
+         }
     }
     else if(!strcmp("intersect",word)){
          if(data[lineCount]->size != 3){
@@ -1051,7 +1084,9 @@ int callOperation(set_t **data,int lineCount){
          }
          long setLine1 = getIndex(data,lineCount,1);
          long setLine2 = getIndex(data,lineCount,2);
-         intersect(data[setLine1],data[setLine2]);
+         if(intersect(data[setLine1],data[setLine2]) == -1){
+             return -1;
+         }
     }
     else if(!strcmp("minus",word)){
         if(data[lineCount]->size != 3){
@@ -1060,7 +1095,9 @@ int callOperation(set_t **data,int lineCount){
          }
          long setLine1 = getIndex(data,lineCount,1);
          long setLine2 = getIndex(data,lineCount,2);
-         minus(data[setLine1],data[setLine2]);
+         if(minus(data[setLine1],data[setLine2]) == -1){
+             return -1;
+         }
     }
     else if(!strcmp("subseteq",word)){
      	if(data[lineCount]->size != 3){
@@ -1069,7 +1106,9 @@ int callOperation(set_t **data,int lineCount){
          }
          long setLine1 = getIndex(data,lineCount,1);
          long setLine2 = getIndex(data,lineCount,2);
-         subseteq(data[setLine1],data[setLine2]);
+         if(subseteq(data[setLine1],data[setLine2]) == -1){
+             return -1;
+         }
     }
     else if(!strcmp("subset",word)){
      	if(data[lineCount]->size != 3){
@@ -1078,7 +1117,9 @@ int callOperation(set_t **data,int lineCount){
          }
          long setLine1 = getIndex(data,lineCount,1);
          long setLine2 = getIndex(data,lineCount,2);
-         subset(data[setLine1],data[setLine2]);
+         if(subset(data[setLine1],data[setLine2]) == -1){
+             return -1;
+         }
     }
     else if(!strcmp("equals",word)){
         if(data[lineCount]->size != 3){
@@ -1087,7 +1128,9 @@ int callOperation(set_t **data,int lineCount){
         }
         long setLine1 = getIndex(data,lineCount,1);
         long setLine2 = getIndex(data,lineCount,2);
-        equals(data[setLine1],data[setLine2]);
+        if(equals(data[setLine1],data[setLine2]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("reflexive",word)){
         if(data[lineCount]->size!=2){
@@ -1095,7 +1138,9 @@ int callOperation(set_t **data,int lineCount){
             return -1;
         }
         int setLine = getIndex(data,lineCount,1);
-        reflexive(data[setLine], data[0]);
+        if(reflexive(data[setLine], data[0]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("symmetric",word)){
      	if(data[lineCount]->size!=2){
@@ -1103,7 +1148,9 @@ int callOperation(set_t **data,int lineCount){
             return -1;
         }
         int setLine = getIndex(data,lineCount,1);
-        symmetric(data[setLine]);
+        if(symmetric(data[setLine]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("antisymmetric",word)){
         if(data[lineCount]->size!=2){
@@ -1111,7 +1158,9 @@ int callOperation(set_t **data,int lineCount){
             return -1;
         }
         int setLine = getIndex(data,lineCount,1);
-        antisymmetric(data[setLine]);
+        if(antisymmetric(data[setLine]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("transitive",word)){
         if(data[lineCount]->size!=2){
@@ -1119,7 +1168,9 @@ int callOperation(set_t **data,int lineCount){
             return -1;
         }
         int setLine = getIndex(data,lineCount,1);
-        transitive(data[setLine]);
+        if(transitive(data[setLine]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("function",word)){
         if(data[lineCount]->size!=2){
@@ -1127,7 +1178,9 @@ int callOperation(set_t **data,int lineCount){
             return -1;
         }
         int setLine = getIndex(data,lineCount,1);
-        function(data[setLine]);
+        if(function(data[setLine]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("domain",word)){
         if(data[lineCount]->size != 2){
@@ -1135,7 +1188,9 @@ int callOperation(set_t **data,int lineCount){
              return -1;
         }
         long setLine1 = getIndex(data,lineCount,1);
-        domain(data[setLine1]);
+        if(domain(data[setLine1]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("codomain",word)){
         if(data[lineCount]->size != 2){
@@ -1143,7 +1198,9 @@ int callOperation(set_t **data,int lineCount){
              return -1;
         }
         long setLine1 = getIndex(data,lineCount,1);
-        codomain(data[setLine1]);
+        if(codomain(data[setLine1]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("injective",word)){
         if(data[lineCount]->size != 4){
@@ -1153,7 +1210,9 @@ int callOperation(set_t **data,int lineCount){
         long setLine1 = getIndex(data,lineCount,1);
         long setLine2 = getIndex(data,lineCount,2);
         long setLine3 = getIndex(data,lineCount,3);
-        injective(data[setLine1], data[setLine2], data[setLine3]);
+        if(injective(data[setLine1], data[setLine2], data[setLine3]) == -1){
+            return -1;
+        }
     }
  
     else if(!strcmp("surjective",word)){
@@ -1164,7 +1223,9 @@ int callOperation(set_t **data,int lineCount){
         long setLine1 = getIndex(data,lineCount,1);
         long setLine2 = getIndex(data,lineCount,2);
         long setLine3 = getIndex(data,lineCount,3);
-        surjective(data[setLine1], data[setLine2], data[setLine3]);
+        if(surjective(data[setLine1], data[setLine2], data[setLine3]) == -1){
+            return -1;
+        }
     }
     else if(!strcmp("bijective",word)){
         if(data[lineCount]->size != 4){
@@ -1174,11 +1235,14 @@ int callOperation(set_t **data,int lineCount){
         long setLine1 = getIndex(data,lineCount,1);
         long setLine2 = getIndex(data,lineCount,2);
         long setLine3 = getIndex(data,lineCount,3);
-        bijective(data[setLine1], data[setLine2], data[setLine3]);
+        if(bijective(data[setLine1], data[setLine2], data[setLine3]) == -1){
+            return -1;
+        }
     }
     
     else{
         err("Command not found!\n");
+        return -1;
     }
     return 0;
 }
@@ -1262,7 +1326,7 @@ int parse(FILE *file,set_t **data, int *lineCount){
     int c;
     bool isC = false;
     set_t *setTmp;
-
+    bool isRS = false;
     while((c = fgetc(file)) != EOF){
         if(*lineCount > MAX_LINES){
             err("Max line count exceeded\n");
@@ -1307,9 +1371,10 @@ int parse(FILE *file,set_t **data, int *lineCount){
         }
 
         if(c == 'S'){
-            
+            int x = fgetc(file);
+            isRS = true;
             //Struct is being created
-            if(fgetc(file) == ' '){
+            if(x == ' ' || x == '\n'){
                 setTmp = ctor(S);
                 if(allocLine(file,setTmp) == -1){
                     return -1;
@@ -1323,20 +1388,25 @@ int parse(FILE *file,set_t **data, int *lineCount){
                  
         }
         if(c == 'R'){
-            
+            int x = fgetc(file);
+            isRS = true;
             //Struct is relation being created
-            if(fgetc(file) == ' '){
+            if(x == ' ' || x == '\n'){
                 setTmp = ctor(R);
                 if(allocLine(file,setTmp) == -1){
                     return -1;
                 }
             } 
+            else{
+                err("No space error\n");
+                return -1;
+            }
                  
                  
         }
         if(c == 'C'){
             isC = true;
-
+            
             if(fgetc(file) == ' '){
                 setTmp = ctor(C);
                 if(allocLine(file,setTmp) == -1){
@@ -1345,7 +1415,10 @@ int parse(FILE *file,set_t **data, int *lineCount){
             }
                          
         }
-
+        if(c != 'C' && c != 'S' && c != 'R' && c != 'U'){
+            err("Error undefined\n");
+            return -1;
+        }
           
         
         data[*lineCount] = setTmp;
@@ -1356,6 +1429,16 @@ int parse(FILE *file,set_t **data, int *lineCount){
             }
         }
         (*lineCount)++;
+        
+        
+    }
+    if(!isRS){
+        err("Set or relation not found\n");
+        return -1;
+    }
+    if(!isC){
+        err("Command not found\n");
+        return -1;
     }
 
     return 0;
@@ -1385,7 +1468,10 @@ int main(int argc, char** argv){
     int i = 0;
     int count = 0;
     int err_code = parse(input,data,&i); //NACTENI DAT A INICIALIZACE KODOVEHO HLASENI
+    
+    
     if(err_code == -1){
+
 
         while(count < i){
         
@@ -1398,6 +1484,7 @@ int main(int argc, char** argv){
         return -1;
     }
     
+    
     while(count < i){
         if((data[count]->type) != C){
             
@@ -1405,6 +1492,16 @@ int main(int argc, char** argv){
         }
         else{
             if(callOperation(data,count) == -1){
+                while(count < i){
+        
+                    dtor(data[count]);
+                    count++;  
+                }
+
+                free(data);
+                
+            
+                fclose(input);
                 return -1;
             }
         }
