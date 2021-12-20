@@ -1,3 +1,20 @@
+/**
+ * @file setcal.c
+ * @author Dominik Hofman - xhofma11
+ * @author Daniel Čapka - xcapka04
+ * @author Michal Dohnal - xdohna52 
+ * @author Filip Kurčák - xkurca01
+ * @brief IDM Program for sets and its operations, relations and its operations
+ * @version 1.0
+ * @date 2021-12-05
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+
+
+
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -1468,7 +1485,6 @@ int main(int argc, char** argv){
     }
     count = 0;
     while(count < i){
-        
         dtor(data[count]);
         count++;  
     }
